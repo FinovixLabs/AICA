@@ -1,0 +1,1937 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AICA Assistant â€” GST Compliance Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+/* ================= THEME TOKENS ================= */
+:root{
+  --ink:#16202E; --ink-soft:#5A6B7E; --ink-faint:#90A0B0;
+  --canvas:#F1F4F7; --surface:#FFFFFF; --surface-alt:#F8FAFB; --surface-deep:#EEF2F6;
+  --line:#E2E8EE; --line-soft:#EDF1F5;
+  --navy:#102A43; --navy-2:#1B3A5B; --navy-3:#274C75;
+  --sb-bg:#102A43; --sb-text:#C7D4E0; --sb-muted:#8FA4B8; --sb-dim:#6E8499; --sb-hover:rgba(255,255,255,.07); --sb-active:rgba(255,255,255,.10);
+  --gold:#B8842B; --gold-2:#9C6F1E; --gold-soft:#F6EDD9; --gold-line:#E8D6AC;
+  --green:#1F8A5B; --green-soft:#E2F3EA; --green-line:#BEE3CE; --green-text:#156B43;
+  --amber:#C77A0A; --amber-soft:#FBEFD8; --amber-text:#945A07;
+  --red:#C0392B; --red-soft:#FBE6E3; --red-text:#9A2B1E;
+  --blue:#2C6FB3; --blue-soft:#E5F0F9; --blue-text:#1E5285;
+  --doc-bg:#FFFFFF; --doc-ink:#1A2533;
+  --btn-nav-bg:#102A43; --btn-nav-bg-h:#1B3A5B; --btn-nav-text:#fff;
+  --hero-grad:linear-gradient(135deg,#102A43 0%,#1B3A5B 100%);
+  --r:10px; --r-sm:7px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(16,42,67,.04),0 4px 16px rgba(16,42,67,.06);
+  --shadow-lg:0 8px 40px rgba(16,42,67,.16);
+  --glow-gold:0 3px 14px rgba(184,132,43,.32);
+  --sans:'Inter',system-ui,sans-serif;
+  --display:'Archivo',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Source Serif 4',Georgia,serif;
+}
+[data-theme="dark"]{
+  --ink:#E6EDF4; --ink-soft:#97A8B9; --ink-faint:#65788B;
+  --canvas:#0B131D; --surface:#121E2B; --surface-alt:#172534; --surface-deep:#0E1822;
+  --line:#243648; --line-soft:#1C2C3C;
+  --navy:#16283C; --navy-2:#1E3650; --navy-3:#3D6DA3;
+  --sb-bg:#0E1722; --sb-text:#B9C8D6; --sb-muted:#7A8FA3; --sb-dim:#5A6F83; --sb-hover:rgba(255,255,255,.05); --sb-active:rgba(255,255,255,.09);
+  --gold:#D9A648; --gold-2:#B8842B; --gold-soft:#2C2410; --gold-line:#6B5524;
+  --green:#3DBA84; --green-soft:#11281D; --green-line:#1E4631; --green-text:#5ED2A0;
+  --amber:#E89B2E; --amber-soft:#2C2110; --amber-text:#F0B254;
+  --red:#E25A4A; --red-soft:#2E1512; --red-text:#F08A7D;
+  --blue:#5B9BD9; --blue-soft:#11233A; --blue-text:#82B5E5;
+  --doc-bg:#15222F; --doc-ink:#DCE6EF;
+  --btn-nav-bg:#3D6DA3; --btn-nav-bg-h:#4A7FB8; --btn-nav-text:#fff;
+  --hero-grad:linear-gradient(135deg,#14253A 0%,#1B3450 100%);
+  --shadow:0 1px 2px rgba(0,0,0,.2),0 4px 16px rgba(0,0,0,.25);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
+  --glow-gold:0 3px 16px rgba(217,166,72,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .35s ease,color .35s ease}
+body.theming *{transition:background-color .35s ease,border-color .35s ease,color .35s ease,box-shadow .35s ease!important}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+::selection{background:var(--gold-soft);color:var(--ink)}
+.mono{font-family:var(--mono);font-feature-settings:"tnum" 1;letter-spacing:-.02em}
+.num{font-family:var(--mono);font-feature-settings:"tnum" 1}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;border:2px solid var(--canvas)}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ================= LOGIN ================= */
+#login{position:fixed;inset:0;z-index:100;display:grid;grid-template-columns:1.05fr 1fr;background:#102A43}
+#login.hidden{display:none}
+.login-brand{position:relative;padding:56px 60px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;background:radial-gradient(120% 90% at 0% 0%,#1B3A5B 0%,#102A43 60%)}
+.login-brand::after{content:"";position:absolute;right:-180px;bottom:-180px;width:520px;height:520px;border-radius:50%;border:1px solid rgba(232,214,172,.16);box-shadow:0 0 0 60px rgba(232,214,172,.04)}
+.login-brand .seal-deco{position:absolute;right:8%;top:50%;transform:translateY(-50%);width:340px;height:340px;opacity:.5;animation:slowspin 90s linear infinite}
+@keyframes slowspin{to{transform:translateY(-50%) rotate(360deg)}}
+.logo-row{display:flex;align-items:center;gap:13px;z-index:2}
+.logo-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(150deg,#B8842B,#9C6F1E);display:grid;place-items:center;box-shadow:0 6px 20px rgba(184,132,43,.4)}
+.logo-mark svg{width:23px;height:23px}
+.logo-word{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em}
+.logo-word span{color:#E8D6AC}
+.login-pitch{z-index:2;max-width:430px}
+.login-pitch .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#E8D6AC;margin-bottom:22px}
+.login-pitch h1{font-family:var(--display);font-weight:700;font-size:38px;line-height:1.12;letter-spacing:-.025em;margin-bottom:18px}
+.login-pitch p{color:#B9C9D9;font-size:15px;line-height:1.6}
+.login-foot{z-index:2;display:flex;gap:28px;color:#7E93A8;font-size:12.5px}
+.login-foot b{color:#E8D6AC;font-family:var(--display);font-size:16px;display:block;margin-bottom:2px}
+.login-form-wrap{background:var(--surface);display:grid;place-items:center;padding:40px}
+.login-card{width:100%;max-width:368px}
+.login-card h2{font-family:var(--display);font-weight:700;font-size:25px;letter-spacing:-.02em;margin-bottom:6px}
+.login-card .sub{color:var(--ink-soft);margin-bottom:30px;font-size:14px}
+.field{margin-bottom:17px}
+.field label{display:block;font-weight:600;font-size:12.5px;margin-bottom:7px;color:var(--ink)}
+.field input{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:14px;background:var(--surface-alt);color:var(--ink);transition:.15s}
+.field input:focus{border-color:var(--navy-3);background:var(--surface);outline:none;box-shadow:0 0 0 3px var(--blue-soft)}
+.field .hint{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:6px}
+.btn-primary{width:100%;padding:13px;background:var(--btn-nav-bg);color:var(--btn-nav-text);border-radius:var(--r-sm);font-weight:600;font-size:14.5px;transition:.15s}
+.btn-primary:hover{background:var(--btn-nav-bg-h)}
+.login-meta{margin-top:22px;padding-top:20px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-soft)}
+.login-meta a{color:var(--blue);font-weight:600}
+
+/* ================= APP SHELL ================= */
+#app{display:none;min-height:100vh}
+#app.active{display:grid;grid-template-columns:250px 1fr}
+.sidebar{background:var(--sb-bg);color:var(--sb-text);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-top{padding:18px 18px 14px}
+.sb-logo{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.sb-logo .logo-mark{width:34px;height:34px;border-radius:9px}
+.sb-logo .logo-mark svg{width:19px;height:19px}
+.sb-logo .logo-word{font-size:17px;color:#fff}
+.client-switch{background:var(--sb-hover);border:1px solid rgba(255,255,255,.09);border-radius:var(--r-sm);padding:9px 11px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s;width:100%;text-align:left}
+.client-switch:hover{background:var(--sb-active)}
+.client-switch .cs-ava{width:30px;height:30px;border-radius:7px;background:linear-gradient(140deg,var(--gold),var(--gold-2));color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:13px;flex-shrink:0}
+.client-switch .cs-info{min-width:0;flex:1}
+.client-switch .cs-name{color:#fff;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-switch .cs-gstin{font-family:var(--mono);font-size:10.5px;color:var(--sb-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-switch .cs-chev{color:var(--sb-muted);flex-shrink:0}
+.sb-nav{padding:8px 12px;flex:1}
+.sb-section{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sb-dim);padding:14px 10px 7px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--r-sm);font-size:13.5px;font-weight:500;color:var(--sb-text);transition:.13s;width:100%;text-align:left;position:relative}
+.nav-item svg{width:18px;height:18px;stroke-width:1.9;flex-shrink:0}
+.nav-item:hover{background:var(--sb-hover);color:#fff}
+.nav-item.active{background:var(--sb-active);color:#fff}
+.nav-item.active::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:0 3px 3px 0}
+.nav-item .badge{margin-left:auto;background:var(--gold);color:#102A43;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;font-family:var(--mono)}
+.nav-item .badge.red{background:var(--red);color:#fff}
+.nav-item kbd{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--sb-dim);border:1px solid rgba(255,255,255,.12);padding:1px 5px;border-radius:4px}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.08)}
+.ca-chip{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--r-sm)}
+.ca-chip .ava{width:32px;height:32px;border-radius:50%;background:var(--navy-3);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;font-family:var(--display)}
+.ca-chip .nm{font-weight:600;font-size:13px;color:#fff}
+.ca-chip .rl{font-size:11px;color:var(--sb-muted);font-family:var(--mono)}
+
+/* topbar */
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:0 26px;height:62px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:30}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft)}
+.crumbs b{color:var(--ink);font-weight:600}
+.crumbs .sep{color:var(--ink-faint)}
+.cmdk-btn{margin-left:auto;display:flex;align-items:center;gap:10px;padding:8px 13px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:var(--surface-alt);color:var(--ink-faint);font-size:13px;width:280px;transition:.14s}
+.cmdk-btn:hover{border-color:var(--navy-3);color:var(--ink-soft)}
+.cmdk-btn svg{width:15px;height:15px;flex-shrink:0}
+.cmdk-btn kbd{margin-left:auto;font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--ink-soft)}
+.topbtn{width:38px;height:38px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--ink-soft);border:1.5px solid var(--line);transition:.14s;position:relative;background:var(--surface)}
+.topbtn:hover{background:var(--surface-alt);color:var(--ink)}
+.topbtn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface)}
+.topbtn svg{width:19px;height:19px}
+.hamburger{display:none}
+/* theme toggle morph */
+#themeBtn .sun,#themeBtn .moon{position:absolute;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .3s}
+[data-theme="light"] #themeBtn .moon{transform:rotate(90deg) scale(.4);opacity:0}
+[data-theme="dark"] #themeBtn .sun{transform:rotate(-90deg) scale(.4);opacity:0}
+
+/* notifications dropdown */
+.notif-wrap{position:relative}
+.notif-panel{position:absolute;right:0;top:46px;width:330px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:50;opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:.18s}
+.notif-panel.open{opacity:1;transform:none;pointer-events:auto}
+.notif-panel .np-head{padding:13px 16px;border-bottom:1px solid var(--line-soft);font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.notif-panel .np-head button{font-size:11.5px;color:var(--blue);font-weight:600}
+.notif-item{display:flex;gap:11px;padding:12px 16px;border-bottom:1px solid var(--line-soft);transition:.12s}
+.notif-item:hover{background:var(--surface-alt)}
+.notif-item:last-child{border-bottom:none}
+.notif-item .ni{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.notif-item .ni svg{width:15px;height:15px}
+.notif-item .nt{font-size:12.5px;font-weight:600}
+.notif-item .ns{font-size:11.5px;color:var(--ink-soft);margin-top:1px}
+.notif-item .ntime{font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:3px}
+
+.scroll{flex:1;overflow-y:auto;padding:26px;scroll-behavior:smooth}
+.view{display:none}
+.view.active{display:block;animation:viewin .35s cubic-bezier(.21,.6,.35,1)}
+@keyframes viewin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .45s cubic-bezier(.21,.6,.35,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.rise:nth-child(2){animation-delay:.05s}.rise:nth-child(3){animation-delay:.1s}.rise:nth-child(4){animation-delay:.15s}
+
+/* page head */
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px;flex-wrap:wrap}
+.pagehead .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.pagehead h1{font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:-.025em;line-height:1.1}
+.pagehead p{color:var(--ink-soft);margin-top:6px;font-size:14px;max-width:560px}
+.head-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--r-sm);font-weight:600;font-size:13.5px;transition:.16s;white-space:nowrap;position:relative;overflow:hidden}
+.btn svg{width:16px;height:16px;stroke-width:2}
+.btn:active{transform:scale(.97)}
+.btn.nav{background:var(--btn-nav-bg);color:var(--btn-nav-text)}.btn.nav:hover{background:var(--btn-nav-bg-h)}
+.btn.gold{background:linear-gradient(150deg,var(--gold),var(--gold-2));color:#fff;box-shadow:var(--glow-gold)}.btn.gold:hover{filter:brightness(1.07)}
+.btn.ghost{background:var(--surface);border:1.5px solid var(--line);color:var(--ink)}.btn.ghost:hover{border-color:var(--navy-3);background:var(--surface-alt)}
+.btn.green{background:var(--green);color:#fff}.btn.green:hover{filter:brightness(1.08)}
+.btn.sm{padding:7px 12px;font-size:12.5px}
+.btn.sm svg{width:14px;height:14px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn:disabled:hover{filter:none}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
+.card.hoverable{transition:.18s}
+.card.hoverable:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--navy-3)}
+.card-pad{padding:20px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px;align-items:start;min-width:0}
+.split>*{min-width:0}
+.filing-top{align-items:start}
+.filing-docs-card{min-height:300px;display:flex;flex-direction:column}
+.filing-docs-card #requirementsCheckResult{overflow:visible}
+.filing-top>.chat{height:clamp(300px,42vh,560px);position:static;align-self:start}
+.filing-output-card{margin-top:16px;height:clamp(340px,46vh,640px);display:flex;flex-direction:column}
+.filing-output-card #generatedOutputBody{flex:1;min-height:0}
+.filing-output-card .generated-csv-scroll{height:100%;max-height:none}
+
+/* stat */
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.18s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat .lbl{font-size:12.5px;color:var(--ink-soft);font-weight:500;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.stat .lbl svg{width:15px;height:15px}
+.stat .val{font-family:var(--display);font-weight:700;font-size:31px;letter-spacing:-.03em;line-height:1}
+.stat .val small{font-size:15px;color:var(--ink-faint);font-weight:600;margin-left:3px}
+.stat .meta{margin-top:9px;font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:5px}
+.stat .meta .up{color:var(--green);font-weight:600}
+.stat .accent{position:absolute;left:0;top:0;bottom:0;width:3px}
+.stat.gold .accent{background:var(--gold)}.stat.green .accent{background:var(--green)}
+.stat.amber .accent{background:var(--amber)}.stat.blue .accent{background:var(--blue)}.stat.red .accent{background:var(--red)}
+.stat .spark{position:absolute;right:12px;bottom:12px;opacity:.85}
+
+/* section heads, pills, tables, rows â€” same vocabulary as v1 */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-head h2{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.01em}
+.sec-head .link{font-size:12.5px;color:var(--blue);font-weight:600;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card-head h3{font-family:var(--display);font-weight:600;font-size:15px}
+.card-head .sub{font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:30px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pill .d{width:6px;height:6px;border-radius:50%}
+.pill.ai{background:var(--blue-soft);color:var(--blue-text)}.pill.ai .d{background:var(--blue)}
+.pill.reviewed{background:var(--amber-soft);color:var(--amber-text)}.pill.reviewed .d{background:var(--amber)}
+.pill.approved{background:var(--green-soft);color:var(--green-text)}.pill.approved .d{background:var(--green)}
+.pill.final{background:var(--gold-soft);color:var(--gold)}.pill.final .d{background:var(--gold)}
+.pill.high{background:var(--red-soft);color:var(--red-text)}.pill.high .d{background:var(--red)}
+.pill.med{background:var(--amber-soft);color:var(--amber-text)}.pill.med .d{background:var(--amber)}
+.pill.low{background:var(--blue-soft);color:var(--blue-text)}.pill.low .d{background:var(--blue)}
+.pill.pending{background:var(--surface-deep);color:var(--ink-soft)}.pill.pending .d{background:var(--ink-faint)}
+.pill.due{background:var(--red-soft);color:var(--red-text)}.pill.due .d{background:var(--red);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;font-family:var(--mono);background:var(--surface-alt);border:1px solid var(--line);color:var(--ink-soft)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--surface-alt)}
+.tbl td{padding:13px 16px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:.12s}
+.tbl tbody tr:hover{background:var(--surface-alt)}
+.tbl .nm{font-weight:600;color:var(--ink)}
+.tbl .right{text-align:right}
+.tbl .gstin{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft)}
+#generatedOutputBody{max-width:100%;overflow:hidden}
+.generated-csv-scroll{max-width:100%;max-height:340px;overflow:auto}
+.generated-csv-table{table-layout:fixed}
+.generated-csv-table th,.generated-csv-table td{max-width:180px;overflow-wrap:anywhere;word-break:break-word}
+.row-click{cursor:pointer}
+.copy-btn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;color:var(--ink-faint);transition:.12s;vertical-align:middle;margin-left:5px}
+.copy-btn:hover{background:var(--surface-deep);color:var(--ink)}
+.copy-btn svg{width:12px;height:12px}
+
+.act-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.act-row:last-child{border-bottom:none}
+.act-ico{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.act-ico svg{width:17px;height:17px}
+.act-ico.b{background:var(--blue-soft);color:var(--blue)}
+.act-ico.g{background:var(--green-soft);color:var(--green)}
+.act-ico.a{background:var(--amber-soft);color:var(--amber)}
+.act-ico.gd{background:var(--gold-soft);color:var(--gold)}
+.act-body{flex:1;min-width:0}
+.act-body .t{font-weight:600;font-size:13px}
+.act-body .s{font-size:12px;color:var(--ink-soft);margin-top:1px}
+.act-time{font-family:var(--mono);font-size:11px;color:var(--ink-faint);white-space:nowrap}
+
+.dl-row{display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.dl-row:last-child{border-bottom:none}
+.dl-date{width:46px;text-align:center;flex-shrink:0}
+.dl-date .d{font-family:var(--display);font-weight:700;font-size:19px;line-height:1}
+.dl-date .m{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--ink-faint);letter-spacing:.06em}
+.dl-body{flex:1;min-width:0}
+.dl-body .t{font-weight:600;font-size:13px}
+.dl-body .s{font-size:11.5px;color:var(--ink-soft)}
+.meter{height:8px;background:var(--line-soft);border-radius:20px;overflow:hidden}
+.meter .fill{height:100%;border-radius:20px;transition:width .8s cubic-bezier(.21,.6,.35,1)}
+
+/* compliance ring */
+.ring{transform:rotate(-90deg)}
+.ring .bgc{stroke:var(--line-soft)}
+.ring .fgc{stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.21,.6,.35,1)}
+
+/* chart bars */
+.chartbar{transition:.18s;cursor:pointer}
+.chartbar:hover{opacity:.75}
+
+.filters{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:3px;gap:2px}
+.seg button{padding:6px 13px;border-radius:5px;font-size:12.5px;font-weight:600;color:var(--ink-soft);transition:.13s}
+.seg button.on{background:var(--btn-nav-bg);color:var(--btn-nav-text)}
+.search-inline{position:relative;width:260px}
+.search-inline input{width:100%;padding:9px 12px 9px 36px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:var(--surface);font-family:inherit;font-size:13px;color:var(--ink)}
+.search-inline input:focus{outline:none;border-color:var(--navy-3)}
+.search-inline svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-faint)}
+
+/* profile hero */
+.profile-hero{background:var(--hero-grad);border-radius:var(--r-lg);padding:26px 28px;color:#fff;position:relative;overflow:hidden;margin-bottom:20px}
+.profile-hero::after{content:"";position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(232,214,172,.14)}
+.ph-top{display:flex;align-items:flex-start;gap:18px;position:relative;z-index:2;flex-wrap:wrap}
+.ph-ava{width:62px;height:62px;border-radius:15px;background:linear-gradient(140deg,var(--gold),var(--gold-2));display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:26px;flex-shrink:0;box-shadow:0 6px 20px rgba(184,132,43,.4)}
+.ph-info h1{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.02em}
+.ph-info .gstin{font-family:var(--mono);font-size:13px;color:var(--gold-line);margin-top:4px;display:inline-flex;align-items:center;gap:8px}
+[data-theme="dark"] .ph-info .gstin{color:#E8D6AC}
+.ph-info .meta{display:flex;gap:18px;margin-top:11px;color:#B9C9D9;font-size:12.5px;flex-wrap:wrap}
+.ph-info .meta span{display:inline-flex;align-items:center;gap:6px}
+.ph-info .meta svg{width:14px;height:14px}
+.ph-score{margin-left:auto;display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:12px 18px;z-index:2}
+.ph-score .txt .v{font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+.ph-score .txt .l{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#B9C9D9;margin-top:3px}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+.tab{padding:11px 16px;font-weight:600;font-size:13.5px;color:var(--ink-soft);border-bottom:2.5px solid transparent;transition:.13s;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--gold)}
+.tab-panel{display:none}.tab-panel.on{display:block;animation:viewin .3s ease}
+
+/* upload */
+.dropzone{border:2px dashed var(--line);border-radius:var(--r-lg);padding:42px;text-align:center;background:var(--surface-alt);transition:.18s;cursor:pointer;position:relative;overflow:hidden}
+.dropzone:hover,.dropzone.drag{border-color:var(--gold);background:var(--gold-soft)}
+.dropzone.drag{transform:scale(1.01)}
+.dropzone .dz-ico{width:58px;height:58px;border-radius:15px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 16px;box-shadow:var(--shadow);transition:.2s}
+.dropzone:hover .dz-ico{transform:translateY(-3px)}
+.dropzone .dz-ico svg{width:28px;height:28px;color:var(--gold)}
+.dropzone h3{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:5px}
+.dropzone p{color:var(--ink-soft);font-size:13px}
+.dropzone .browse{color:var(--blue);font-weight:600}
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.type-card{border:1.5px solid var(--line);border-radius:var(--r);padding:15px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface)}
+.type-card:hover{border-color:var(--navy-3);transform:translateY(-2px)}
+.type-card.on{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 3px rgba(184,132,43,.13)}
+.type-card .ti{width:38px;height:38px;border-radius:9px;background:var(--surface-alt);display:grid;place-items:center;margin:0 auto 9px}
+.type-card.on .ti{background:var(--surface)}
+.type-card .ti svg{width:20px;height:20px;color:var(--navy-3)}
+.type-card .tn{font-weight:600;font-size:13px}
+.type-card .td{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.upload-item{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);margin-bottom:9px;animation:rise .4s ease both}
+.upload-item .fi{width:36px;height:36px;border-radius:8px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;flex-shrink:0}
+.upload-item .fi svg{width:18px;height:18px}
+.upload-item .fb{flex:1;min-width:0}
+.upload-item .fn{font-weight:600;font-size:13px}
+.upload-item .fm{font-size:11.5px;color:var(--ink-soft);margin-top:1px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.upbar{height:4px;background:var(--line-soft);border-radius:4px;overflow:hidden;margin-top:7px}
+.upbar .f{height:100%;background:var(--gold);border-radius:4px;animation:upfill 1.2s cubic-bezier(.3,0,.2,1) forwards}
+@keyframes upfill{from{width:4%}to{width:100%}}
+
+/* stepper */
+.stepper{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:5px;margin-bottom:20px;box-shadow:var(--shadow);overflow-x:auto}
+.step{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--r-sm);flex-shrink:0;transition:.15s;cursor:pointer}
+.step .sn{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:12px;background:var(--surface-alt);border:1.5px solid var(--line);color:var(--ink-soft);flex-shrink:0;transition:.2s}
+.step .sn svg{width:13px;height:13px}
+.step .st{font-weight:600;font-size:13px;color:var(--ink-soft);white-space:nowrap}
+.step.done .sn{background:var(--green);border-color:var(--green);color:#fff}
+.step.done .st{color:var(--ink)}
+.step.on{background:var(--btn-nav-bg)}
+.step.on .sn{background:var(--gold);border-color:var(--gold);color:#fff}
+.step.on .st{color:#fff}
+.step-sep{flex:1;height:1.5px;background:var(--line);min-width:14px}
+
+.extract-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--green-soft);border:1px solid var(--green-line);border-radius:var(--r-sm);margin-bottom:16px;font-size:13px}
+.extract-bar svg{width:18px;height:18px;color:var(--green);flex-shrink:0}
+.extract-bar b{color:var(--green-text)}
+
+.recon-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:10px;background:var(--surface);transition:.15s}
+.recon-row:hover{border-color:var(--navy-3)}
+.recon-row.flag{border-left:3px solid var(--red)}
+.recon-row.ok{border-left:3px solid var(--green)}
+.recon-row.warn{border-left:3px solid var(--amber)}
+.recon-ico{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.recon-ico svg{width:18px;height:18px}
+.recon-ico.r{background:var(--red-soft);color:var(--red)}
+.recon-ico.g{background:var(--green-soft);color:var(--green)}
+.recon-ico.a{background:var(--amber-soft);color:var(--amber)}
+.recon-body{flex:1;min-width:0}
+.recon-body .rt{font-weight:600;font-size:13.5px}
+.recon-body .rs{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.recon-amt{text-align:right;flex-shrink:0}
+.recon-amt .ra{font-family:var(--mono);font-weight:600;font-size:15px}
+.recon-amt .ra.r{color:var(--red)}.recon-amt .ra.g{color:var(--green)}
+.recon-amt .rl{font-size:10.5px;color:var(--ink-faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+
+/* chat */
+.chat{display:flex;flex-direction:column;height:calc(100vh - 62px - 52px);position:sticky;top:0;overflow:hidden}
+.chat-head{padding:15px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+.chat-head .ci{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,var(--gold),var(--gold-2));display:grid;place-items:center}
+.chat-head .ci svg{width:16px;height:16px;color:#fff}
+.chat-head h3{font-family:var(--display);font-weight:600;font-size:14px}
+.chat-head .cs{font-size:11px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:5px}
+.chat-head .cs .d{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.chat-body{flex:1;overflow-y:auto;padding:16px}
+.msg{margin-bottom:14px;display:flex;gap:9px;max-width:94%;animation:rise .3s ease both}
+.msg.user{margin-left:auto;flex-direction:row-reverse}
+.msg .mava{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:grid;place-items:center;font-size:11px;font-weight:700;font-family:var(--display)}
+.msg.ai .mava{background:linear-gradient(150deg,var(--gold),var(--gold-2));color:#fff}
+.msg.user .mava{background:var(--navy-3);color:#fff}
+.msg .mtxt{padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.55}
+.msg.ai .mtxt{background:var(--surface-alt);border:1px solid var(--line-soft);border-top-left-radius:3px}
+.msg.user .mtxt{background:var(--btn-nav-bg);color:#fff;border-top-right-radius:3px}
+.msg .mtxt .ref{font-family:var(--mono);font-size:11px;color:var(--blue-text);background:var(--blue-soft);padding:1px 6px;border-radius:4px}
+.typing{display:inline-flex;gap:4px;padding:12px 14px;background:var(--surface-alt);border:1px solid var(--line-soft);border-radius:12px;border-top-left-radius:3px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-faint);animation:tb 1.1s ease-in-out infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tb{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.chat-sug{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:7px}
+.chat-sug button{font-size:12px;padding:6px 11px;border:1.5px solid var(--line);border-radius:20px;color:var(--ink-soft);font-weight:500;transition:.14s;background:var(--surface)}
+.chat-sug button:hover{border-color:var(--gold);color:var(--gold)}
+.chat-input{padding:13px 16px;border-top:1px solid var(--line-soft);display:flex;gap:9px;align-items:flex-end}
+.chat-input textarea{flex:1;border:1.5px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-family:inherit;font-size:13px;resize:none;max-height:90px;background:var(--surface-alt);color:var(--ink)}
+.chat-input textarea:focus{outline:none;border-color:var(--navy-3);background:var(--surface)}
+.chat-send{width:38px;height:38px;border-radius:var(--r-sm);background:var(--btn-nav-bg);color:var(--btn-nav-text);display:grid;place-items:center;flex-shrink:0;transition:.14s}
+.chat-send:hover{background:var(--btn-nav-bg-h)}
+.chat-send svg{width:17px;height:17px}
+
+/* notice meta + doc */
+.notice-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.nm-cell{background:var(--surface);padding:14px 16px}
+.nm-cell .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+.nm-cell .v{font-weight:600;font-size:14px}
+.nm-cell .v.mono{font-family:var(--mono);font-size:13px}
+.nm-cell .v.red{color:var(--red)}
+.doc-toolbar{display:flex;align-items:center;gap:9px;padding:11px 16px;background:var(--surface-alt);border:1px solid var(--line);border-bottom:none;border-radius:var(--r) var(--r) 0 0;flex-wrap:wrap}
+.doc-toolbar .vline{width:1px;height:20px;background:var(--line);margin:0 3px}
+.doc-toolbar .vsel{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+.doc-toolbar select{border:1.5px solid var(--line);border-radius:6px;padding:5px 9px;font-family:inherit;font-size:12.5px;font-weight:600;background:var(--surface);color:var(--ink)}
+.doc-wrap{position:relative}
+.doc{background:var(--doc-bg);border:1px solid var(--line);border-radius:0 0 var(--r) var(--r);padding:38px 44px;font-family:var(--serif);font-size:14.5px;line-height:1.75;color:var(--doc-ink);box-shadow:var(--shadow);position:relative;min-height:400px}
+.doc .doc-head{text-align:center;border-bottom:2px solid var(--doc-ink);padding-bottom:14px;margin-bottom:22px}
+.doc .doc-head h2{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.doc .doc-head .ref{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-top:5px}
+.doc p{margin-bottom:14px}
+.doc .salut{font-weight:600}
+.doc .para-num{font-weight:600;font-family:var(--display)}
+.doc ol{margin:0 0 14px 22px}
+.doc ol li{margin-bottom:8px}
+.doc .doc-sign{margin-top:30px}
+.doc .editable{outline:none;border-radius:3px;transition:.15s}
+.doc .editable:focus{background:var(--gold-soft);box-shadow:0 0 0 2px var(--gold-line)}
+.doc .hl{background:var(--gold-soft);padding:0 2px;border-radius:2px}
+.seal{position:absolute;right:42px;bottom:40px;width:118px;height:118px;opacity:0;transform:scale(1.6) rotate(-16deg);transition:opacity .55s ease,transform .55s cubic-bezier(.34,1.6,.64,1);pointer-events:none;filter:drop-shadow(0 2px 8px rgba(184,132,43,.35))}
+.seal.stamped{opacity:.94;transform:scale(1) rotate(-8deg)}
+@keyframes stampshake{0%{transform:scale(1) rotate(-8deg)}25%{transform:scale(1.02) rotate(-7.4deg)}100%{transform:scale(1) rotate(-8deg)}}
+
+/* knowledge */
+.kb-card{padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);transition:.16s;cursor:pointer}
+.kb-card:hover{border-color:var(--gold);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.kb-card .kt{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);background:var(--gold-soft);padding:3px 8px;border-radius:5px;margin-bottom:10px}
+.kb-card h3{font-family:var(--display);font-weight:600;font-size:14.5px;margin-bottom:5px}
+.kb-card p{font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+.kb-card .kc{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);display:flex;gap:14px}
+
+.empty{text-align:center;padding:48px 20px}
+.empty .ei{width:54px;height:54px;border-radius:14px;background:var(--surface-alt);border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 14px}
+.empty .ei svg{width:26px;height:26px;color:var(--ink-faint)}
+.empty h3{font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:5px}
+.empty p{color:var(--ink-soft);font-size:13px;max-width:340px;margin:0 auto 16px}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--btn-nav-bg);color:#fff;padding:13px 20px;border-radius:var(--r);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:11px;font-size:13.5px;font-weight:500;z-index:200;opacity:0;transition:.32s cubic-bezier(.21,.6,.35,1);max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast svg{width:18px;height:18px;color:var(--gold-line);flex-shrink:0}
+[data-theme="dark"] .toast svg{color:#E8D6AC}
+
+/* settings */
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+.set-row:last-child{border-bottom:none}
+.set-row .sl{font-weight:600;font-size:13.5px}
+.set-row .ss{font-size:12px;color:var(--ink-soft);margin-top:2px;max-width:420px}
+.switch{width:42px;height:24px;border-radius:20px;background:var(--line);position:relative;transition:.2s;flex-shrink:0;cursor:pointer}
+.switch.on{background:var(--green)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch.on::after{left:21px}
+.theme-pick{display:flex;gap:10px}
+.theme-opt{flex:1;border:2px solid var(--line);border-radius:var(--r);padding:10px;cursor:pointer;transition:.15s;text-align:center}
+.theme-opt.on{border-color:var(--gold);background:var(--gold-soft)}
+.theme-opt .swatch{height:44px;border-radius:6px;margin-bottom:8px;border:1px solid var(--line)}
+.theme-opt .swatch.light{background:linear-gradient(135deg,#F1F4F7 50%,#fff 50%)}
+.theme-opt .swatch.dark{background:linear-gradient(135deg,#0B131D 50%,#121E2B 50%)}
+.theme-opt .tl{font-weight:600;font-size:12.5px}
+
+/* command palette */
+.cmdk{position:fixed;inset:0;z-index:300;display:none;align-items:flex-start;justify-content:center;padding-top:14vh;background:rgba(8,16,26,.5);backdrop-filter:blur(3px)}
+.cmdk.open{display:flex}
+.cmdk-panel{width:560px;max-width:92vw;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);overflow:hidden;animation:cmdin .22s cubic-bezier(.21,.6,.35,1)}
+/* add-client modal */
+.modal{display:none;position:fixed;inset:0;z-index:150;align-items:center;justify-content:center;background:rgba(8,16,26,.5);backdrop-filter:blur(3px)}
+.modal.open{display:flex}
+.modal-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:480px;width:90vw;overflow:hidden;animation:cmdin .22s cubic-bezier(.21,.6,.35,1)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0}
+.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:600;color:var(--muted)}
+.field input,.field select{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:8px 12px;color:var(--text);font-size:14px;width:100%;box-sizing:border-box}
+.modal-foot{padding:0 24px 20px;display:flex;gap:10px;justify-content:flex-end}
+@keyframes cmdin{from{opacity:0;transform:translateY(-10px) scale(.98)}to{opacity:1;transform:none}}
+.cmdk-input{display:flex;align-items:center;gap:11px;padding:15px 18px;border-bottom:1px solid var(--line-soft)}
+.cmdk-input svg{width:18px;height:18px;color:var(--ink-faint);flex-shrink:0}
+.cmdk-input input{flex:1;border:none;background:none;font-family:inherit;font-size:15px;color:var(--ink);outline:none}
+.cmdk-input kbd{font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);padding:2px 6px;border-radius:4px;color:var(--ink-soft)}
+.cmdk-list{max-height:330px;overflow-y:auto;padding:8px}
+.cmdk-sec{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);padding:9px 12px 4px}
+.cmdk-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;width:100%;text-align:left}
+.cmdk-item svg{width:16px;height:16px;color:var(--ink-faint);flex-shrink:0}
+.cmdk-item:hover,.cmdk-item.sel{background:var(--surface-alt)}
+.cmdk-item.sel{box-shadow:inset 2.5px 0 0 var(--gold)}
+.cmdk-item .ci-sub{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.mb0{margin-bottom:0}
+.flexrow{display:flex;align-items:center;gap:10px}
+.stack{display:flex;flex-direction:column}
+.gap10{gap:10px}
+.gap8{gap:8px}
+.muted{color:var(--ink-soft)}.faint{color:var(--ink-faint)}
+.fs12{font-size:12px}.fs13{font-size:13px}
+.mini-list{margin:7px 0 0 18px;padding:0;color:var(--ink-soft);font-size:13px;line-height:1.55}
+.right{text-align:right}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media(max-width:1100px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .split{grid-template-columns:1fr}
+  .chat{height:auto;position:static;max-height:560px}
+  .filing-docs-card{height:auto;max-height:none}
+  .filing-top>.chat{height:clamp(300px,42vh,560px);max-height:560px}
+  .filing-output-card{height:clamp(340px,55vh,640px)}
+  .type-grid{grid-template-columns:repeat(2,1fr)}
+  .cmdk-btn{width:auto}
+  .cmdk-btn .cmdk-hint{display:none}
+}
+@media(max-width:860px){
+  #app.active{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;width:250px;z-index:60;transform:translateX(-100%);transition:.26s;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:none}
+  .hamburger{display:grid}
+  .cmdk-btn{width:42px;padding:0;justify-content:center}
+  .cmdk-btn span,.cmdk-btn kbd{display:none}
+  #login{grid-template-columns:1fr}
+  .login-brand{display:none}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .notice-meta{grid-template-columns:1fr}
+  .scroll{padding:16px}
+  .doc{padding:24px 20px}
+}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(8,16,26,.5);z-index:55}
+.sb-overlay.show{display:block}
+/* loading skeletons + states */
+.skel{background:linear-gradient(90deg,var(--surface-alt) 25%,var(--surface-deep) 37%,var(--surface-alt) 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.skel-line{height:13px;margin:8px 0;border-radius:5px}
+.skel-stat{height:120px}
+.skel-row{height:50px;margin-bottom:9px}
+.state-msg{text-align:center;padding:54px 22px;max-width:420px;margin:0 auto}
+.state-msg .si{width:54px;height:54px;border-radius:14px;background:var(--surface-alt);border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 14px}
+.state-msg .si svg{width:26px;height:26px;color:var(--ink-faint)}
+.state-msg.err .si{background:var(--red-soft);border-color:var(--red-soft)}
+.state-msg.err .si svg{color:var(--red)}
+.state-msg h3{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:6px}
+.state-msg p{color:var(--ink-soft);font-size:13px;margin-bottom:16px}
+.state-msg code{font-family:var(--mono);font-size:12px;background:var(--surface-alt);border:1px solid var(--line);padding:2px 7px;border-radius:5px;color:var(--ink-soft)}
+.login-err{display:none;background:var(--red-soft);color:var(--red-text);border:1px solid var(--red-soft);border-radius:var(--r-sm);padding:10px 13px;font-size:12.5px;font-weight:500;margin-bottom:16px}
+.login-err.show{display:block}
+.btn-primary:disabled{opacity:.6;cursor:wait}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-brand">
+    <div class="logo-row">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4v6c0 4.5-3.3 7.8-8 9-4.7-1.2-8-4.5-8-9V7z" fill="#fff" opacity=".15"/><path d="M4 7l8-4 8 4v6c0 4.5-3.3 7.8-8 9-4.7-1.2-8-4.5-8-9V7z" stroke="#fff" stroke-width="1.6"/><path d="M8.5 12l2.5 2.5L16 9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-word">AICA<span> Assistant</span></div>
+    </div>
+    <svg class="seal-deco" viewBox="0 0 200 200" fill="none">
+      <circle cx="100" cy="100" r="92" stroke="#E8D6AC" stroke-width="1" opacity=".4"/>
+      <circle cx="100" cy="100" r="78" stroke="#E8D6AC" stroke-width="2" opacity=".5"/>
+      <circle cx="100" cy="100" r="58" stroke="#E8D6AC" stroke-width="1" opacity=".4"/>
+      <path d="M82 100l13 13 26-30" stroke="#E8D6AC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+      <path id="circle-text" d="M100,30 a70,70 0 1,1 -0.1,0" fill="none"/>
+      <text fill="#E8D6AC" opacity=".55" font-family="IBM Plex Mono" font-size="9.5" letter-spacing="3"><textPath href="#circle-text">CA REVIEWED â€¢ CA APPROVED â€¢ COMPLIANCE VERIFIED â€¢ </textPath></text>
+    </svg>
+    <div class="login-pitch">
+      <div class="eyebrow">For Chartered Accountants</div>
+      <h1>GST filing and notice replies, prepared with you in control.</h1>
+      <p>Manage clients GSTIN-wise, extract and reconcile records, and draft notice replies grounded in GST law. Every output waits for your review before it counts as final.</p>
+    </div>
+    <div class="login-foot">
+      <div><b>2 modules</b>Filing &amp; Notices</div>
+      <div><b>100% reviewed</b>No auto-submission</div>
+      <div><b>Client-wise</b>Isolated data store</div>
+    </div>
+  </div>
+  <div class="login-form-wrap">
+    <div class="login-card">
+      <h2>Sign in to your practice</h2>
+      <div class="sub">Use your firm credentials to access client workspaces.</div>
+      <div class="login-err" id="loginErr"></div>
+      <div class="field">
+        <label for="lg-email">Email or Membership No.</label>
+        <input id="lg-email" type="text" placeholder="you@firm.in" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="lg-pass">Password</label>
+        <input id="lg-pass" type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="hint">Authenticates against POST /api/auth/login</div>
+      </div>
+      <button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign in</button>
+      <div class="login-meta">
+        <span>Two-factor enabled</span>
+        <a href="#" onclick="return false">Forgot password?</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar(false)"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4v6c0 4.5-3.3 7.8-8 9-4.7-1.2-8-4.5-8-9V7z" fill="#fff" opacity=".15"/><path d="M4 7l8-4 8 4v6c0 4.5-3.3 7.8-8 9-4.7-1.2-8-4.5-8-9V7z" stroke="#fff" stroke-width="1.6"/><path d="M8.5 12l2.5 2.5L16 9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="logo-word">AICA</div>
+      </div>
+      <button class="client-switch" onclick="go('clients')">
+        <div class="cs-ava" id="csAva">â€”</div>
+        <div class="cs-info">
+          <div class="cs-name" id="csName">No client selected</div>
+          <div class="cs-gstin" id="csGstin">Choose from Clients</div>
+        </div>
+        <svg class="cs-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>
+      </button>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Workspace</div>
+      <button class="nav-item active" data-nav="dashboard" onclick="go('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</button>
+      <button class="nav-item" data-nav="clients" onclick="go('clients')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3 3 0 0 1 0 5.4M16.5 19a5 5 0 0 0-2-4"/></svg>Clients</button>
+      <button class="nav-item" data-nav="documents" onclick="go('documents')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>Documents</button>
+      <div class="sb-section">Modules</div>
+      <button class="nav-item" data-nav="filing" onclick="go('filing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>GST Filing<span class="badge">3</span></button>
+      <button class="nav-item" data-nav="notice" onclick="go('notice')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v4M12 14h.01"/></svg>Notice Replies<span class="badge red">2</span></button>
+      <div class="sb-section">Reference</div>
+      <button class="nav-item" data-nav="knowledge" onclick="go('knowledge')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"/><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M8 8h8M8 12h6"/></svg>GST Knowledge Base</button>
+      <button class="nav-item" data-nav="settings" onclick="go('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 6.3 9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 12 4.6V4.5a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.1a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.1.9z"/></svg>Settings</button>
+    </nav>
+    <div class="sb-foot">
+      <div class="ca-chip">
+        <div class="ava" id="caAva">â€”</div>
+        <div style="flex:1"><div class="nm" id="caName">â€”</div><div class="rl" id="caFrn">â€”</div></div>
+        <button class="topbtn" style="width:32px;height:32px;border-color:rgba(255,255,255,.12);background:transparent;color:var(--sb-muted)" onclick="doLogout()" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="topbtn hamburger" onclick="toggleSidebar(true)" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="crumbs" id="crumbs"><b>Dashboard</b></div>
+      <button class="cmdk-btn" onclick="openCmdk()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Search or jump toâ€¦</span>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="topbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <div class="notif-wrap">
+        <button class="topbtn" onclick="toggleNotif()" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="np-head">Notifications <button onclick="clearNotifs()">Mark all read</button></div>
+          <div id="notifList"><div class="muted fs13" style="padding:18px 16px">Loaded from <code style="font-family:var(--mono);font-size:11px">/api/notifications</code>.</div></div>
+        </div>
+      </div>
+    </header>
+    <div class="scroll" id="scroll"></div>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="cmdk" id="cmdk" onclick="if(event.target===this)closeCmdk()">
+  <div class="cmdk-panel">
+    <div class="cmdk-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="cmdkInput" type="text" placeholder="Search clients, views, actionsâ€¦" oninput="cmdkFilter()" onkeydown="cmdkKeys(event)">
+      <kbd>esc</kbd>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg"></span></div>
+
+<div class="modal" id="addClientModal" onclick="if(event.target===this)closeAddClient()">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h2 style="font-size:16px;font-weight:700">Add client</h2>
+      <button class="icon-btn" onclick="closeAddClient()">âœ•</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>GSTIN *</label><input id="acGstin" placeholder="e.g. 29ABCDE1234F1Z5" style="text-transform:uppercase"></div>
+      <div class="field"><label>Name *</label><input id="acName" placeholder="Business / trade name"></div>
+      <div class="field"><label>State</label><input id="acState" placeholder="e.g. Karnataka"></div>
+      <div class="field"><label>Type</label><select id="acType" >
+        <option value="Regular">Regular</option>
+        <option value="Composition">Composition</option>
+        <option value="Exporters">Exporters</option>
+      </select></div>
+      <div class="field"><label>Scheme</label><select id="acScheme">
+        <option value="Monthly">Monthly</option>
+        <option value="QRMP">QRMP</option>
+        <option value="CMP-08">CMP-08</option>
+      </select></div>
+      <div id="acError" style="color:var(--red);font-size:13px;display:none"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeAddClient()">Cancel</button>
+      <button id="acSubmit" class="btn gold" onclick="submitAddClient()">Add client</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =============================================================================
+   AICA Assistant â€” frontend (production scaffold)
+   -----------------------------------------------------------------------------
+   NO demo data. Every view loads from your Flask backend.
+   All connection points live in CONFIG + Auth + API below.
+   Wire these three blocks to your stack:
+     â€¢ CONFIG.API_BASE / CONFIG.ENDPOINTS   â†’ Flask routes
+     â€¢ Auth                                 â†’ token / session handling
+     â€¢ API                                  â†’ request bodies & expected JSON
+   The expected JSON shape for each endpoint is documented inline.
+============================================================================= */
+'use strict';
+
+/* ============================== 1. CONFIG ============================== */
+const CONFIG = {
+  // Same-origin if Flask serves this file; else absolute e.g. 'http://localhost:5000'
+  API_BASE: '',
+  // Stream assistant replies token-by-token (Flask returns text/event-stream)
+  USE_STREAMING: true,
+  // Rename any route here without touching the rest of the app
+  ENDPOINTS: {
+    login:        '/api/auth/login',     // POST  {email,password} -> {token, user}
+    logout:       '/api/auth/logout',    // POST  -> {ok}
+    me:           '/api/auth/me',        // GET   -> {user}
+    dashboard:    '/api/dashboard',      // GET   -> {stats, liability, deadlines, activity, riskWatch}
+    clients:      '/api/clients',        // GET   -> [client]   |  POST {client} -> {client}
+    client:       '/api/clients/:gstin', // GET   -> {client + detail}
+    documents:    '/api/clients/:gstin/documents', // GET -> [doc] | POST(multipart) -> {doc}
+    reconcile:    '/api/filing/reconcile',         // POST {gstin,period} -> {rows, output, status}
+    requirementsCheck: '/api/filing/requirements-check', // POST {gstin,period} -> {status,message,missing,flags,actions}
+    filingStart:  '/api/filing/start',             // POST {gstin,period} -> {message,filing_json,filing_csv}
+    filingEditOutput: '/api/filing/edit-output',   // POST {gstin,period,instruction,filing_json,filing_csv} -> updated files
+    filingEditOutputStream: '/api/filing/edit-output-stream', // POST same body -> SSE tokens: <CSV> ===FILING_JSON=== <JSON>
+    filingCsv:    '/api/filing/output',            // POST {gstin,period} -> file (blob)
+    classify:     '/api/notices/classify',         // POST(multipart) {gstin,file} -> {meta}
+    draftReply:   '/api/notices/draft-reply',      // POST {gstin,noticeId} -> {meta, draftHtml, refs}
+    approveReply: '/api/notices/approve',          // POST {gstin,noticeId,html,version} -> {version, savedAt}
+    chat:         '/api/chat',                     // POST {gstin,context,messages} -> SSE / {reply}
+    knowledge:    '/api/knowledge',                // GET ?q= -> {stats, templates}
+  },
+};
+
+/* ============================== 2. AUTH ===============================
+   Token persists in localStorage when available (your Flask deployment),
+   and silently falls back to in-memory if storage is blocked (e.g. preview).
+   Swap to httpOnly cookies by leaving token null and relying on credentials. */
+const Auth = (() => {
+  let mem = null;
+  const KEY = 'aica_token';
+  const safeGet = () => { try { return localStorage.getItem(KEY); } catch { return mem; } };
+  const safeSet = v => { try { localStorage.setItem(KEY, v); } catch { mem = v; } };
+  const safeDel = () => { try { localStorage.removeItem(KEY); } catch { mem = null; } };
+  return {
+    get token(){ return safeGet(); },
+    set(t){ safeSet(t); },
+    clear(){ safeDel(); },
+    isAuthed(){ return !!safeGet(); },
+    // Header attached to every API request
+    headers(){ const t = safeGet(); return t ? { Authorization: 'Bearer ' + t } : {}; },
+  };
+})();
+
+/* ============================== 3. API ================================ */
+const url = (key, params={}) => {
+  let p = CONFIG.ENDPOINTS[key];
+  for (const k in params) p = p.replace(':' + k, encodeURIComponent(params[k]));
+  return CONFIG.API_BASE + p;
+};
+
+async function request(endpointUrl, { method='GET', body, isForm=false } = {}) {
+  const opts = {
+    method,
+    headers: { ...Auth.headers(), ...(isForm ? {} : { 'Content-Type': 'application/json' }) },
+    credentials: 'include',           // sends cookies too, for cookie-based auth
+  };
+  if (body !== undefined) opts.body = isForm ? body : JSON.stringify(body);
+
+  let res;
+  try { res = await fetch(endpointUrl, opts); }
+  catch (e) { throw new ApiError('Network error â€” backend unreachable', 0); }
+
+  if (res.status === 401) { Auth.clear(); showLogin(); throw new ApiError('Session expired', 401); }
+  if (!res.ok) {
+    let msg = `Request failed (${res.status})`;
+    try { const j = await res.json(); msg = j.error || j.message || msg; } catch {}
+    throw new ApiError(msg, res.status);
+  }
+  const ct = res.headers.get('content-type') || '';
+  return ct.includes('application/json') ? res.json() : res;
+}
+class ApiError extends Error { constructor(m, s){ super(m); this.status = s; } }
+
+// Shared SSE reader: drains a `data: {"token":"…"}` / `data: [DONE]` stream,
+// invokes onToken per token, and returns the full accumulated text.
+async function readSseStream(res, onToken){
+  const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '', full = '';
+  while (true) {
+    const { value, done } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream:true });
+    const lines = buf.split('\n'); buf = lines.pop();
+    for (const line of lines) {
+      const t = line.replace(/^data:\s*/, '').trim();
+      if (!t || t === '[DONE]') continue;
+      try { const j = JSON.parse(t); if (j.token){ full += j.token; onToken && onToken(j.token); } }
+      catch { full += t; onToken && onToken(t); }
+    }
+  }
+  return full;
+}
+
+const API = {
+  /* ---- AUTH ---- */
+  // POST /api/auth/login  body {email,password}  -> {token, user:{name,frn,initials}}
+  login: (email, password) => request(url('login'), { method:'POST', body:{ email, password } }),
+  logout: () => request(url('logout'), { method:'POST' }),
+  me: () => request(url('me')),
+
+  /* ---- DASHBOARD ----
+     -> { stats:{ filings:{done,total,delta}, openNotices, approved, itcReconciled,
+                  sparks:{ filings:[], notices:[], approved:[], itc:[] } },
+          liability:[{m,v}], deadlines:[{day,mon,title,sub,overdue}],
+          activity:[{kind,title,sub,time}], riskWatch:[{level,title,sub}] } */
+  dashboard: () => request(url('dashboard')),
+
+  /* ---- CLIENTS ----
+     listClients -> [{ init,name,gstin,state,type,score,scheme,risk,filing,notices,trend:[] }]
+     getClient   -> { ...client, stats:{returns,itcMatch,openNotices}, signals:[{level,title,sub}],
+                      documents:[{name,type,route,extracted}], filings:[{period,return,output,status,version}],
+                      notices:[{form,section,demand,due,status}] } */
+  listClients: () => request(url('clients')),
+  getClient: (gstin) => request(url('client', { gstin })),
+  createClient: (client) => request(url('clients'), { method:'POST', body: client }),
+
+  /* ---- DOCUMENTS ----
+     uploadDocument(multipart: file, gstin, type) -> {name,type,route,extracted,status} */
+  listDocuments: (gstin) => request(url('documents', { gstin })),
+  uploadDocument: (gstin, file, type) => {
+    const fd = new FormData();
+    fd.append('file', file); fd.append('gstin', gstin); fd.append('type', type);
+    return request(url('documents', { gstin }), { method:'POST', body: fd, isForm:true });
+  },
+
+  /* ---- FILING (deterministic backend) ----
+     reconcile -> { rows:[{level,title,sub,amount,label,amtColor}],
+                    output:{ rows:[{table,desc,igst,cgst,sgst,held}] }, status } */
+  reconcile: (gstin, period) => request(url('reconcile'), { method:'POST', body:{ gstin, period } }),
+  requirementsCheck: (gstin, period) => request(url('requirementsCheck'), { method:'POST', body:{ gstin, period } }),
+  filingStart: (gstin, period) => request(url('filingStart'), { method:'POST', body:{ gstin, period } }),
+  filingEditOutput: (payload) => request(url('filingEditOutput'), { method:'POST', body:payload }),
+  filingCsv: (gstin, period) => request(url('filingCsv'), { method:'POST', body:{ gstin, period } }),
+
+  /* ---- NOTICES (RAG + LLM draft) ----
+     classify   -> { meta:{type,template,section,demand,issue,due} }
+     draftReply -> { meta:{...}, draftHtml:"<p>â€¦</p>", refs:["CHUNK_012", â€¦] }
+     approve    -> { version:"Final v1", savedAt } */
+  classifyNotice: (gstin, file) => {
+    const fd = new FormData(); fd.append('file', file); fd.append('gstin', gstin);
+    return request(url('classify'), { method:'POST', body: fd, isForm:true });
+  },
+  draftReply: (gstin, noticeId) => request(url('draftReply'), { method:'POST', body:{ gstin, noticeId } }),
+  approveReply: (gstin, noticeId, html, version) =>
+    request(url('approveReply'), { method:'POST', body:{ gstin, noticeId, html, version } }),
+
+  /* ---- KNOWLEDGE BASE (RAG store, read-only metadata) ----
+     -> { stats:{chunks,templates,forms,updated}, templates:[{tag,id,desc,chunks}] } */
+  knowledge: (q='') => request(url('knowledge') + (q ? `?q=${encodeURIComponent(q)}` : '')),
+
+  /* ---- CHAT (RAG pipeline; streaming) ----
+     POST /api/chat {gstin, context, messages:[{role,content}]}
+     Streaming: text/event-stream lines  data: {"token":"â€¦"}  ... data: [DONE]
+     Non-streaming fallback: {reply:"â€¦"} */
+  chat: async (gstin, context, messages, onToken) => {
+    const res = await fetch(url('chat'), {
+      method:'POST',
+      headers:{ ...Auth.headers(), 'Content-Type':'application/json', 'Accept': CONFIG.USE_STREAMING ? 'text/event-stream' : 'application/json' },
+      credentials:'include',
+      body: JSON.stringify({ gstin, context, messages }),
+    });
+    if (!res.ok) throw new ApiError(`Chat failed (${res.status})`, res.status);
+
+    if (CONFIG.USE_STREAMING && res.body && (res.headers.get('content-type')||'').includes('event-stream')) {
+      return readSseStream(res, onToken);
+    }
+    const j = await res.json(); const reply = j.reply || '';
+    onToken && onToken(reply);
+    return reply;
+  },
+
+  /* ---- FILING EDIT (streaming) ----
+     POST /api/filing/edit-output-stream {gstin,period,instruction,filing_json,filing_csv}
+     Streams tokens of: <updated CSV> ===FILING_JSON=== <updated filing_json>
+     Returns the full accumulated text; caller splits on the delimiter. */
+  filingEditOutputStream: async (payload, onToken) => {
+    const res = await fetch(url('filingEditOutputStream'), {
+      method:'POST',
+      headers:{ ...Auth.headers(), 'Content-Type':'application/json', 'Accept':'text/event-stream' },
+      credentials:'include',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(`Filing edit failed (${res.status})`, res.status);
+    if (res.body && (res.headers.get('content-type')||'').includes('event-stream')) {
+      return readSseStream(res, onToken);
+    }
+    // Non-stream fallback: server returned JSON {error} or similar
+    const j = await res.json().catch(()=>({}));
+    throw new ApiError(j.error || 'Filing edit stream unavailable', res.status);
+  },
+};
+
+/* ============================== STATE ================================= */
+const state = { user:null, clients:[], activeClient:null, notice:null, lastRequirementsCheck:null, lastFilingOutput:null, filingStreaming:false };
+
+/* ============================== UI HELPERS =========================== */
+const el = id => document.getElementById(id);
+function ico(p, sw=2){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`; }
+const I = {
+  doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/>',
+  sparkle:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  edit:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/>',
+  book:'<path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"/><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M8 8h8"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  plug:'<path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0zM12 16v6"/>',
+};
+
+const skelStats = (n=4)=>`<div class="grid g4" style="margin-bottom:22px">${Array(n).fill(`<div class="card skel skel-stat"></div>`).join('')}</div>`;
+const skelRows = (n=5)=>`<div class="card card-pad">${Array(n).fill(`<div class="skel skel-row"></div>`).join('')}</div>`;
+const skelView = ()=>`<div class="pagehead"><div><div class="skel skel-line" style="width:120px"></div><div class="skel skel-line" style="width:240px;height:24px"></div></div></div>${skelStats()}${skelRows()}`;
+
+function stateMsg({err=false, icon=I.doc, title, body, action}={}){
+  return `<div class="state-msg ${err?'err':''}"><div class="si">${ico(err?I.alert:icon)}</div><h3>${title}</h3><p>${body}</p>${action||''}</div>`;
+}
+function errorState(e, retryFn){
+  const net = e?.status === 0;
+  return stateMsg({
+    err:true,
+    title: net ? 'Backend not connected' : 'Couldnâ€™t load this view',
+    body: net
+      ? `No response from <code>${CONFIG.API_BASE||'(same origin)'}</code>. Start your Flask server and confirm the route in <code>CONFIG.ENDPOINTS</code>.`
+      : (e?.message || 'Unexpected error.'),
+    action: retryFn ? `<button class="btn ghost" onclick="${retryFn}">Retry</button>` : ''
+  });
+}
+
+/* ============================== THEME ================================ */
+let theme = 'light';
+function setTheme(t){
+  theme = t; document.body.classList.add('theming');
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.theme-opt').forEach(o=>o.classList.toggle('on', o.dataset.t===t));
+  try { localStorage.setItem('aica_theme', t); } catch {}
+  setTimeout(()=>document.body.classList.remove('theming'), 420);
+}
+function toggleTheme(){ setTheme(theme==='light'?'dark':'light'); toast(theme==='dark'?'Dark mode on':'Light mode on'); }
+
+/* ============================== AUTH FLOW =========================== */
+function showLogin(){ el('app').classList.remove('active'); el('login').classList.remove('hidden'); }
+function showApp(){ el('login').classList.add('hidden'); el('app').classList.add('active'); }
+
+async function doLogin(){
+  const email = el('lg-email').value.trim();
+  const pass = el('lg-pass').value;
+  const err = el('loginErr'); const btn = el('loginBtn');
+  err.classList.remove('show');
+  if (!email || !pass){ err.textContent = 'Enter your email and password.'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Signing inâ€¦';
+  try {
+    const { token, user } = await API.login(email, pass);   // <-- your Flask login
+    if (token) Auth.set(token);
+    state.user = user || null;
+    paintUser();
+    showApp();
+    go('dashboard');
+  } catch (e) {
+    err.textContent = e.status === 0
+      ? 'Backend unreachable. Start your Flask server, then sign in.'
+      : (e.message || 'Sign-in failed.');
+    err.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+}
+async function doLogout(){
+  try { await API.logout(); } catch {}
+  Auth.clear(); state.user = null; state.activeClient = null;
+  showLogin(); toast('Signed out');
+}
+function paintUser(){
+  const u = state.user || {};
+  el('caName').textContent = u.name || 'Signed in';
+  el('caFrn').textContent = u.frn || '';
+  el('caAva').textContent = u.initials || (u.name? u.name.split(' ').map(x=>x[0]).slice(0,2).join('') : 'â€”');
+}
+
+/* ============================== SHELL =============================== */
+function toggleSidebar(open){ el('sidebar').classList.toggle('open',open); el('sbOverlay').classList.toggle('show',open); }
+function syncClientChip(){
+  const c = state.activeClient;
+  el('csAva').textContent = c ? (c.init || c.name?.[0] || 'â€”') : 'â€”';
+  el('csName').textContent = c ? c.name : 'No client selected';
+  el('csGstin').textContent = c ? c.gstin : 'Choose from Clients';
+}
+async function selectClient(gstin){
+  const base = state.clients.find(c=>c.gstin===gstin);
+  state.activeClient = base || { gstin };
+  syncClientChip();
+  go('profile');
+}
+function toggleNotif(){ el('notifPanel').classList.toggle('open'); }
+function clearNotifs(){ el('notifDot').style.display='none'; el('notifPanel').classList.remove('open'); toast('All notifications marked read'); }
+document.addEventListener('click', e=>{ if(!e.target.closest('.notif-wrap')) el('notifPanel')?.classList.remove('open'); });
+
+/* ============================== TOAST / COPY ======================== */
+let toastT;
+function toast(msg){ el('toastMsg').textContent=msg; el('toast').classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el('toast').classList.remove('show'),2600); }
+function copyText(t,e){ e&&e.stopPropagation(); const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch{} document.body.removeChild(ta); toast('Copied '+t); }
+
+/* ============================== ADD CLIENT MODAL ==================== */
+function openAddClient(){
+  ['acGstin','acName','acState'].forEach(id=>el(id).value='');
+  el('acType').value='Regular'; el('acScheme').value='Monthly';
+  el('acError').style.display='none';
+  el('addClientModal').classList.add('open');
+  setTimeout(()=>el('acGstin').focus(),50);
+}
+function closeAddClient(){ el('addClientModal').classList.remove('open'); }
+async function submitAddClient(){
+  const gstin=el('acGstin').value.trim().toUpperCase();
+  const name=el('acName').value.trim();
+  if(!gstin||!name){ showAcError('GSTIN and Name are required'); return; }
+  // Mirror the DB's GSTIN CHECK so invalid input fails fast with a clear message.
+  if(!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z]Z[0-9A-Z]$/.test(gstin)){
+    showAcError('Enter a valid 15-character GSTIN (e.g. 29ABCDE1234F1Z5)'); return;
+  }
+  const btn=el('acSubmit'); if(btn){ btn.disabled=true; }
+  try{
+    await API.createClient({gstin,name,state:el('acState').value.trim(),type:el('acType').value.trim(),scheme:el('acScheme').value.trim()});
+  }catch(e){
+    showAcError(e?.message || 'Could not add client'); toast('Could not add client'); return;
+  }finally{
+    if(btn){ btn.disabled=false; }
+  }
+  closeAddClient();
+  toast('Client added');
+  go('clients');   // re-fetches the list from the DB so the new client appears
+}
+function showAcError(msg){ el('acError').textContent=msg; el('acError').style.display='block'; }
+
+/* ============================== ROUTER (async) ====================== */
+const CRUMB = {
+  dashboard:'<b>Dashboard</b>', clients:'<b>Clients</b>',
+  profile:'Clients <span class="sep">/</span> <b id="cbName"></b>',
+  documents:'<b>Documents</b>',
+  filing:'Modules <span class="sep">/</span> <b>GST Filing</b>',
+  notice:'Modules <span class="sep">/</span> <b>Notice Replies</b>',
+  knowledge:'<b>GST Knowledge Base</b>', settings:'<b>Settings</b>',
+};
+async function go(view){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.nav===view));
+  el('crumbs').innerHTML = CRUMB[view] || '';
+  if (view==='profile'){ const c=document.querySelector('#cbName'); if(c) c.textContent = state.activeClient?.name || ''; }
+  toggleSidebar(false);
+  // immediate skeleton, then async content
+  el('scroll').innerHTML = `<div class="view active">${skelView()}</div>`;
+  el('scroll').scrollTop = 0;
+  try {
+    const html = await VIEWS[view]();
+    el('scroll').innerHTML = `<div class="view active">${html}</div>`;
+    if (POST[view]) POST[view]();
+  } catch (e) {
+    el('scroll').innerHTML = `<div class="view active">${errorState(e, `go('${view}')`)}</div>`;
+  }
+}
+
+/* ============================== CHARTS ============================== */
+function sparkline(data, color, w=72, h=26){
+  if(!data || !data.length) return '';
+  const max=Math.max(...data), min=Math.min(...data), rng=(max-min)||1;
+  const pts=data.map((v,i)=>`${(i/(data.length-1))*w},${h-3-((v-min)/rng)*(h-6)}`).join(' ');
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function ringChart(score, size=56){
+  const r=(size/2)-5, circ=2*Math.PI*r, off=circ*(1-(score||0)/100);
+  const col=score>=80?'var(--green)':score>=60?'var(--amber)':'var(--red)';
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle class="bgc" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="5"/><circle class="fgc" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>`;
+}
+function barChart(liability){
+  if(!liability || !liability.length) return `<div class="muted fs13">No liability data returned.</div>`;
+  const w=560,h=150,pad=30,bw=46,max=Math.max(...liability.map(d=>d.v))*1.15||1;
+  const bars=liability.map((d,i)=>{
+    const x=pad+i*((w-pad*1.5)/liability.length), bh=(d.v/max)*(h-44), y=h-26-bh, cur=i===liability.length-1;
+    return `<rect class="chartbar" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${cur?'var(--gold)':'var(--blue-soft)'}" stroke="${cur?'none':'var(--blue)'}" stroke-width="${cur?0:1}" stroke-opacity=".35" onclick="toast('${d.m}: â‚¹${d.v}L')"/><text x="${x+bw/2}" y="${h-10}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-faint)">${d.m}</text><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" font-weight="600" fill="${cur?'var(--gold)':'var(--ink-soft)'}">${d.v}</text>`;
+  }).join('');
+  return `<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">${bars}</svg>`;
+}
+function sparkBig(data){
+  if(!data || !data.length) return `<div class="muted fs13">No trend data.</div>`;
+  const w=420,h=84,max=Math.max(...data),min=Math.min(...data),rng=(max-min)||1;
+  const pts=data.map((v,i)=>[(i/(data.length-1))*(w-20)+10, h-14-((v-min)/rng)*(h-30)]);
+  const line=pts.map(p=>p.join(',')).join(' ');
+  return `<svg width="100%" viewBox="0 0 ${w} ${h}"><polygon points="10,${h-10} ${line} ${w-10},${h-10}" fill="var(--gold-soft)"/><polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ============================== VIEWS (async) ======================= */
+const VIEWS = {};
+
+VIEWS.dashboard = async () => {
+  const [d, clients] = await Promise.all([ API.dashboard(), API.listClients() ]);
+  state.clients = clients || [];
+  const s = d?.stats || {};
+  const f = s.filings || {};
+  const sp = s.sparks || {};
+  return `
+<div class="pagehead rise">
+  <div>
+    <div class="eyebrow">Practice overview</div>
+    <h1>${state.user?.name ? 'Welcome, ' + state.user.name : 'Dashboard'}</h1>
+    <p>${state.clients.length} active client${state.clients.length===1?'':'s'} in your workspace.</p>
+  </div>
+  <div class="head-actions">
+    <button class="btn ghost" onclick="go('documents')">${ico(I.upload)}Upload documents</button>
+    <button class="btn nav" onclick="go('clients')">${ico(I.plus)}Add client</button>
+  </div>
+</div>
+
+<div class="grid g4 rise" style="margin-bottom:22px">
+  <div class="stat gold"><div class="accent"></div><div class="lbl">${ico(I.doc)}Filings prepared</div><div class="val">${f.done??'â€“'}<small>/ ${f.total??'â€“'}</small></div><div class="meta">${f.delta!=null?`<span class="up">+${f.delta}</span> ready for review`:''}</div>${sparkline(sp.filings,'var(--gold)')}</div>
+  <div class="stat red"><div class="accent"></div><div class="lbl">${ico(I.alert)}Open notices</div><div class="val">${s.openNotices??'â€“'}</div><div class="meta">awaiting reply</div>${sparkline(sp.notices,'var(--red)')}</div>
+  <div class="stat green"><div class="accent"></div><div class="lbl">${ico(I.check)}Approved &amp; saved</div><div class="val">${s.approved??'â€“'}</div><div class="meta">this month</div>${sparkline(sp.approved,'var(--green)')}</div>
+  <div class="stat blue"><div class="accent"></div><div class="lbl">${ico(I.clock)}ITC reconciled</div><div class="val">${s.itcReconciled??'â€“'}</div><div class="meta">against GSTR-2B</div>${sparkline(sp.itc,'var(--blue)')}</div>
+</div>
+
+<div class="split">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card rise">
+      <div class="card-head"><div><h3>Net GST liability â€” practice total</h3><div class="sub">Computed in backend Â· â‚¹ lakh</div></div></div>
+      <div class="card-pad" style="padding-top:12px">${barChart(d?.liability)}</div>
+    </div>
+    <div class="card rise">
+      <div class="card-head"><div><h3>Client compliance status</h3><div class="sub">Current return period</div></div><a class="link" onclick="go('clients')">View all ${ico(I.arrow,2)}</a></div>
+      ${state.clients.length ? `<table class="tbl"><thead><tr><th>Client</th><th>GSTIN</th><th>Scheme</th><th>Filing</th><th>Risk</th><th class="right">Score</th></tr></thead><tbody>${state.clients.map(clientRow).join('')}</tbody></table>` : stateMsg({icon:I.users,title:'No clients yet',body:'Add your first client to begin.',action:`<button class="btn nav" onclick="go('clients')">${ico(I.plus)}Add client</button>`})}
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card card-pad rise">
+      <div class="sec-head"><h2>Upcoming deadlines</h2></div>
+      ${(d?.deadlines||[]).length ? d.deadlines.map(dlRow).join('') : `<div class="muted fs13">No deadlines returned.</div>`}
+    </div>
+    <div class="card card-pad rise">
+      <div class="sec-head"><h2>Recent activity</h2></div>
+      ${(d?.activity||[]).length ? d.activity.map(actRow).join('') : `<div class="muted fs13">No recent activity.</div>`}
+    </div>
+    <div class="card card-pad rise">
+      <div class="sec-head"><h2>Risk watch</h2></div>
+      ${(d?.riskWatch||[]).length ? d.riskWatch.map(r=>`<div class="recon-row ${r.level==='high'?'flag':'warn'}" style="margin-bottom:10px"><div class="recon-ico ${r.level==='high'?'r':'a'}">${ico(I.alert)}</div><div class="recon-body"><div class="rt">${r.title}</div><div class="rs">${r.sub}</div></div></div>`).join('') : `<div class="muted fs13">No risks flagged.</div>`}
+    </div>
+  </div>
+</div>`;
+};
+
+VIEWS.clients = async () => {
+  state.clients = await API.listClients() || [];
+  return `
+<div class="pagehead">
+  <div><div class="eyebrow">Client register</div><h1>Clients</h1><p>Each client is managed GSTIN-wise with an isolated document store.</p></div>
+  <div class="head-actions"><button class="btn nav" onclick="openAddClient()">${ico(I.plus)}Add client</button></div>
+</div>
+<div class="filters">
+  <div class="seg" id="clientSeg">
+    <button class="on" onclick="segPick(this,'all')">All</button>
+    <button onclick="segPick(this,'Regular')">Regular</button>
+    <button onclick="segPick(this,'Composition')">Composition</button>
+    <button onclick="segPick(this,'Exporter')">Exporters</button>
+  </div>
+  <div class="search-inline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="clientFilter" placeholder="Filter by name or GSTINâ€¦" oninput="filterClients()"></div>
+</div>
+<div class="card">
+  ${state.clients.length ? `<table class="tbl"><thead><tr><th>Client</th><th>GSTIN</th><th>State</th><th>Type</th><th>Scheme</th><th>Filing</th><th>Risk</th><th class="right">Compliance</th></tr></thead><tbody id="clientRows">${state.clients.map(clientRowFull).join('')}</tbody></table>`
+  : stateMsg({icon:I.users,title:'No clients found',body:'Your <code>GET /api/clients</code> returned an empty list. Add a client to get started.'})}
+</div>`;
+};
+
+VIEWS.profile = async () => {
+  const gstin = state.activeClient?.gstin;
+  if (!gstin) return stateMsg({icon:I.users,title:'No client selected',body:'Pick a client from the register first.',action:`<button class="btn nav" onclick="go('clients')">Go to clients</button>`});
+  const c = await API.getClient(gstin);
+  state.activeClient = { ...state.activeClient, ...c };
+  syncClientChip();
+  const st = c.stats || {};
+  return `
+<div class="profile-hero rise">
+  <div class="ph-top">
+    <div class="ph-ava">${c.init || c.name?.[0] || 'â€”'}</div>
+    <div class="ph-info">
+      <h1>${c.name||''}</h1>
+      <div class="gstin">${c.gstin}<button class="copy-btn" style="color:inherit" onclick="copyText('${c.gstin}',event)">${ico(I.copy)}</button> <span class="pill" style="background:rgba(255,255,255,.12);color:#fff"><span class="d" style="background:var(--green)"></span>${c.status||'Active'}</span></div>
+      <div class="meta"><span>${ico(I.doc)} ${c.type||''}</span><span>${ico(I.clock)} ${c.scheme||''} filer</span><span>${ico(I.check)} ${c.state||''}</span></div>
+    </div>
+    <div class="ph-score">${ringChart(c.score||0)}<div class="txt"><div class="v">${c.score??'â€“'}</div><div class="l">Compliance</div></div></div>
+  </div>
+</div>
+<div class="head-actions" style="margin-bottom:18px">
+  <button class="btn gold" onclick="go('filing')">${ico(I.doc)}Start GST filing</button>
+  <button class="btn nav" onclick="go('notice')">${ico(I.alert)}Draft notice reply</button>
+  <button class="btn ghost" onclick="go('documents')">${ico(I.upload)}Upload documents</button>
+</div>
+<div class="tabs">
+  <button class="tab on" data-tab="overview" onclick="profTab('overview')">Overview</button>
+  <button class="tab" data-tab="docs" onclick="profTab('docs')">Documents</button>
+  <button class="tab" data-tab="filings" onclick="profTab('filings')">Filing history</button>
+  <button class="tab" data-tab="notices" onclick="profTab('notices')">Notices &amp; replies</button>
+</div>
+<div class="tab-panel on" id="tp-overview">
+  <div class="grid g3" style="margin-bottom:16px">
+    <div class="stat gold"><div class="accent"></div><div class="lbl">Returns filed</div><div class="val">${st.returns??'â€“'}</div><div class="meta">FY to date</div></div>
+    <div class="stat green"><div class="accent"></div><div class="lbl">ITC matched</div><div class="val">${st.itcMatch??'â€“'}<small>%</small></div><div class="meta">against GSTR-2B</div></div>
+    <div class="stat amber"><div class="accent"></div><div class="lbl">Open notices</div><div class="val">${st.openNotices??'â€“'}</div><div class="meta">${st.openNotices?'in progress':'none'}</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card card-pad">
+      <div class="sec-head"><h2>Compliance signals</h2></div>
+      ${(c.signals||[]).length ? c.signals.map(sig=>signalRow(sig)).join('') : `<div class="muted fs13">No signals returned.</div>`}
+    </div>
+    <div class="card card-pad">
+      <div class="sec-head"><h2>Score trend</h2></div>
+      <div style="padding:8px 0 4px">${sparkBig(c.trend)}</div>
+    </div>
+  </div>
+</div>
+<div class="tab-panel" id="tp-docs">${docTable(c.documents)}</div>
+<div class="tab-panel" id="tp-filings">
+  <div class="card"><div class="card-head"><div><h3>Filing history</h3><div class="sub">Outputs with version status</div></div></div>
+  ${(c.filings||[]).length ? `<table class="tbl"><thead><tr><th>Period</th><th>Return</th><th>Output</th><th>Status</th><th>Version</th><th class="right">Action</th></tr></thead><tbody>${c.filings.map(filingRow).join('')}</tbody></table>` : stateMsg({title:'No filings yet',body:'Run a filing from the GST Filing module.'})}</div>
+</div>
+<div class="tab-panel" id="tp-notices">
+  ${(c.notices||[]).length ? `<div class="card"><div class="card-head"><div><h3>Notices &amp; replies</h3></div></div><table class="tbl"><thead><tr><th>Notice</th><th>Section</th><th>Demand</th><th>Due date</th><th>Reply status</th><th class="right">Action</th></tr></thead><tbody>${c.notices.map(noticeRow).join('')}</tbody></table></div>` : stateMsg({icon:I.alert,title:'No notices logged',body:'Upload a notice to classify it and start a draft reply.',action:`<button class="btn nav" onclick="go('notice')">Upload a notice</button>`})}
+</div>`;
+};
+
+VIEWS.documents = async () => {
+  const gstin = state.activeClient?.gstin;
+  let docs = [];
+  if (gstin) { try { docs = await API.listDocuments(gstin); } catch {} }
+  return `
+<div class="pagehead">
+  <div><div class="eyebrow">${state.activeClient?.name || 'Select a client'}</div><h1>Documents</h1><p>Upload once. The backend classifies, names, and routes each file.</p></div>
+</div>
+${!gstin ? stateMsg({icon:I.users,title:'Pick a client first',body:'Documents are stored per GSTIN. Choose a client to upload against.',action:`<button class="btn nav" onclick="go('clients')">Go to clients</button>`}) : `
+<div class="grid g2" style="align-items:start">
+  <div class="card card-pad">
+    <input type="file" id="fileInput" style="display:none" onchange="handleFiles(this.files)">
+    <div class="dropzone" id="dz" onclick="el('fileInput').click()">
+      <div class="dz-ico">${ico(I.upload)}</div>
+      <h3>Drop files or click to upload</h3>
+      <p>Posts to <code>/api/clients/${gstin}/documents</code> â€” <span class="browse">browse files</span></p>
+    </div>
+    <div style="font-weight:600;font-size:12.5px;margin:18px 0 4px">Select upload type</div>
+    <div class="type-grid">
+      ${typeCard('text_pdf','Text PDF','pdfplumber',1)}
+      ${typeCard('scanned_pdf','Scanned PDF','OCR / Vision',0)}
+      ${typeCard('image','Image','OCR / Vision',0)}
+      ${typeCard('csv','CSV','Direct parse',0)}
+    </div>
+    <div id="uploadList" class="mt20"></div>
+  </div>
+  <div class="card card-pad">
+    <div class="sec-head"><h2>Stored documents</h2></div>
+    <div id="storedDocs">${docs && docs.length ? docs.map(dDoc).join('') : `<div class="muted fs13">No documents stored for this client.</div>`}</div>
+    <div class="extract-bar mt16">${ico(I.check)}<div><b>Isolation enforced.</b> Client data and the GST knowledge base are stored separately.</div></div>
+  </div>
+</div>`}`;
+};
+
+VIEWS.filing = async () => {
+  const gstin = state.activeClient?.gstin;
+  if (!gstin) return stateMsg({icon:I.users,title:'No client selected',body:'Pick a client to run a filing.',action:`<button class="btn nav" onclick="go('clients')">Go to clients</button>`});
+  const period = currentPeriod();
+  state.lastRequirementsCheck = null;
+  state.lastFilingOutput = null;
+  const r = await API.reconcile(gstin, period);   // <-- deterministic backend
+  const rows = r?.rows || [];
+  const out = r?.output?.rows || [];
+  return `
+<div class="pagehead">
+  <div><div class="eyebrow">${state.activeClient.name} Â· ${gstin}</div><h1>GST Filing Assistant</h1><p>Reconciliation and CSV run in the backend. The assistant only explains and guides.</p></div>
+  <div class="head-actions"><span class="tag" style="padding:8px 12px;font-size:12px">Period Â· ${period}</span></div>
+</div>
+<div class="split filing-top">
+  <div>
+    <div class="card filing-docs-card">
+      <div class="card-head"><div><h3>Uploaded documents relevant to GSTR-1 filing</h3><div class="sub">Previous filing activity</div></div><button class="btn nav sm" onclick="runRequirementsCheck()">${ico(I.check)}Run Requirements check</button></div>
+      <div class="card-pad" id="requirementsCheckResult">${rows.length ? rows.map(reconRow).join('') : `<div class="muted fs13">No history shown.</div>`}</div>
+    </div>
+  </div>
+  ${chatPanel('filing')}
+</div>
+<div class="card filing-output-card">
+  <div class="card-head"><div><h3>Generated output</h3><div class="sub">GSTR-1 JSON and CSV output Â· awaiting CA review</div></div><span class="pill ai"><span class="d"></span>AI Generated</span></div>
+  <div id="generatedOutputBody">${out.length ? `<table class="tbl"><thead><tr><th>Table</th><th>Description</th><th class="right">IGST</th><th class="right">CGST</th><th class="right">SGST</th></tr></thead><tbody>${out.map(o=>`<tr><td class="mono">${o.table}</td><td>${o.desc}</td><td class="right num" ${o.held?'style="color:var(--red)"':''}>${o.igst}</td><td class="right num" ${o.held?'style="color:var(--red)"':''}>${o.cgst}</td><td class="right num" ${o.held?'style="color:var(--red)"':''}>${o.sgst}</td></tr>`).join('')}</tbody></table>` : `<div class="card-pad muted fs13">No output rows returned.</div>`}</div>
+  <div class="card-pad spread" style="border-top:1px solid var(--line-soft)">
+    <span class="fs13 muted">Net liability computed in backend.</span>
+    <div class="flexrow gap8">
+      <button class="btn ghost sm" onclick="downloadCsv()">${ico(I.download)}Download CSV</button>
+      <button class="btn ghost sm" id="downloadRequirementsJsonBtn" onclick="downloadRequirementsJson()" disabled>${ico(I.download)}Download JSON</button>
+      <button class="btn green sm" onclick="toast('PATCH status â†’ CA Reviewed')">${ico(I.check)}Mark reviewed</button>
+    </div>
+  </div>
+</div>`;
+};
+
+VIEWS.notice = async () => {
+  const gstin = state.activeClient?.gstin;
+  if (!gstin) return stateMsg({icon:I.users,title:'No client selected',body:'Pick a client to draft a notice reply.',action:`<button class="btn nav" onclick="go('clients')">Go to clients</button>`});
+  // noticeId would come from the selected notice on the profile; fall back to 'latest'
+  const noticeId = state.notice?.id || 'latest';
+  const r = await API.draftReply(gstin, noticeId);   // <-- RAG + LLM
+  const m = r?.meta || {};
+  const refs = r?.refs || [];
+  return `
+<div class="pagehead">
+  <div><div class="eyebrow">${state.activeClient.name} Â· ${gstin}</div><h1>Notice Reply Assistant</h1><p>Classified, matched to client data and reply formats, then drafted. You approve before final.</p></div>
+</div>
+<div class="stepper">
+  <div class="step done"><span class="sn">${ico(I.check)}</span><span class="st">Notice uploaded</span></div><div class="step-sep"></div>
+  <div class="step done"><span class="sn">${ico(I.check)}</span><span class="st">Classified</span></div><div class="step-sep"></div>
+  <div class="step done"><span class="sn">${ico(I.check)}</span><span class="st">Data retrieved</span></div><div class="step-sep"></div>
+  <div class="step on"><span class="sn">4</span><span class="st">Draft reply</span></div><div class="step-sep"></div>
+  <div class="step"><span class="sn">5</span><span class="st">Approve final</span></div>
+</div>
+<div class="notice-meta" style="margin-bottom:18px">
+  <div class="nm-cell"><div class="l">Notice type</div><div class="v">${m.type||'â€”'}</div></div>
+  <div class="nm-cell"><div class="l">Template matched</div><div class="v mono">${m.template||'â€”'}</div></div>
+  <div class="nm-cell"><div class="l">Section / Rule</div><div class="v">${m.section||'â€”'}</div></div>
+  <div class="nm-cell"><div class="l">Demand amount</div><div class="v mono red">${m.demand||'â€”'}</div></div>
+  <div class="nm-cell"><div class="l">Issue raised</div><div class="v">${m.issue||'â€”'}</div></div>
+  <div class="nm-cell"><div class="l">Reply due</div><div class="v red">${m.due||'â€”'}</div></div>
+</div>
+<div class="split">
+  <div>
+    <div class="doc-toolbar">
+      <button class="btn ghost sm" onclick="toast('Inline editing enabled')">${ico(I.edit)}Edit inline</button>
+      <button class="btn ghost sm" onclick="regenDraft()">${ico(I.sparkle)}Regenerate</button>
+      <div class="vline"></div>
+      <span class="pill ai" id="docStatus"><span class="d"></span>AI Generated</span>
+      ${refs.length?`<span class="tag" title="Grounded in">${refs.length} chunks</span>`:''}
+    </div>
+    <div class="doc-wrap">
+      <div class="doc" id="replyDoc">${r?.draftHtml || '<p class="muted">No draft returned by /api/notices/draft-reply.</p>'}
+        <svg class="seal" id="seal" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="56" fill="none" stroke="var(--gold)" stroke-width="2.5"/><circle cx="60" cy="60" r="46" fill="none" stroke="var(--gold)" stroke-width="1"/>
+          <path id="sealPath" d="M60,12 a48,48 0 1,1 -0.1,0" fill="none"/>
+          <text fill="var(--gold)" font-family="IBM Plex Mono" font-size="8.5" font-weight="600" letter-spacing="2.2"><textPath href="#sealPath" startOffset="0">AICA â€¢ CA APPROVED â€¢ FINAL â€¢ </textPath></text>
+          <path d="M44 60l11 11 22-26" stroke="var(--gold)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="card card-pad mt16 spread">
+      <span class="fs13 muted">Approving stamps the reply final and saves it to the client profile.</span>
+      <div class="flexrow gap8">
+        <button class="btn ghost sm" onclick="toast('Download reply PDF')">${ico(I.download)}Download</button>
+        <button class="btn gold sm" id="approveBtn" onclick="approveReply('${noticeId}')">${ico(I.check)}Approve &amp; save final</button>
+      </div>
+    </div>
+  </div>
+  ${chatPanel('notice')}
+</div>`;
+};
+
+VIEWS.knowledge = async () => {
+  const k = await API.knowledge();
+  const st = k?.stats || {};
+  const tpls = k?.templates || [];
+  return `
+<div class="pagehead">
+  <div><div class="eyebrow">RAG reference Â· not client data</div><h1>GST Knowledge Base</h1><p>Reference material retrieved during drafting. Kept fully separate from client records.</p></div>
+  <div class="head-actions"><button class="btn ghost" onclick="toast('Knowledge ingestion')">${ico(I.plus)}Add chunks</button></div>
+</div>
+<div class="grid g4" style="margin-bottom:20px">
+  <div class="stat blue"><div class="accent"></div><div class="lbl">Knowledge chunks</div><div class="val">${st.chunks??'â€“'}</div><div class="meta">indexed</div></div>
+  <div class="stat gold"><div class="accent"></div><div class="lbl">Reply templates</div><div class="val">${st.templates??'â€“'}</div><div class="meta">notice categories</div></div>
+  <div class="stat green"><div class="accent"></div><div class="lbl">Return forms</div><div class="val">${st.forms??'â€“'}</div><div class="meta">covered</div></div>
+  <div class="stat amber"><div class="accent"></div><div class="lbl">Last updated</div><div class="val" style="font-size:18px">${st.updated||'â€“'}</div><div class="meta">CBIC circulars</div></div>
+</div>
+<div class="sec-head"><h2>Notice reply templates</h2></div>
+${tpls.length ? `<div class="grid g3">${tpls.map(t=>`<div class="kb-card" onclick="toast('${t.id}: ${t.chunks} chunks')"><span class="kt">${t.tag}</span><h3>${t.id}</h3><p>${t.desc}</p><div class="kc"><span>${t.chunks} chunks</span></div></div>`).join('')}</div>` : stateMsg({icon:I.book,title:'No templates returned',body:'Your <code>GET /api/knowledge</code> returned no templates.'})}`;
+};
+
+VIEWS.settings = async () => `
+<div class="pagehead"><div><div class="eyebrow">Practice configuration</div><h1>Settings</h1><p>Controls that govern how the assistant behaves across every client.</p></div></div>
+<div class="grid g2" style="align-items:start">
+  <div class="card card-pad">
+    <div class="sec-head"><h2>Appearance</h2></div>
+    <div class="theme-pick">
+      <div class="theme-opt ${theme==='light'?'on':''}" data-t="light" onclick="setTheme('light')"><div class="swatch light"></div><div class="tl">Light</div></div>
+      <div class="theme-opt ${theme==='dark'?'on':''}" data-t="dark" onclick="setTheme('dark')"><div class="swatch dark"></div><div class="tl">Dark</div></div>
+    </div>
+  </div>
+  <div class="card card-pad">
+    <div class="sec-head"><h2>Connection</h2></div>
+    ${connRow('API base', CONFIG.API_BASE || '(same origin)')}
+    ${connRow('Auth', Auth.isAuthed()?'Token present':'Not signed in')}
+    ${connRow('Streaming chat', CONFIG.USE_STREAMING?'On (SSE)':'Off')}
+    <div class="ss mt12" style="font-size:12px;color:var(--ink-soft)">Edit endpoints in <code>CONFIG.ENDPOINTS</code> at the top of the script.</div>
+  </div>
+  <div class="card card-pad">
+    <div class="sec-head"><h2>Review &amp; control</h2></div>
+    ${setRow('Require CA approval before final','Every AI output stays a draft until approved.',true,true)}
+    ${setRow('Block portal auto-submission','Never submits to the GST portal.',true,true)}
+    ${setRow('Separate client &amp; knowledge stores','Client records and RAG never mix.',true,true)}
+  </div>
+  <div class="card card-pad">
+    <div class="sec-head"><h2>Firm profile</h2></div>
+    <div class="field"><label>Firm name</label><input value="${state.user?.firm||''}" placeholder="Your firm"></div>
+    <div class="field mb0"><label>Registration (FRN)</label><input value="${state.user?.frn||''}" class="mono" placeholder="FRN"></div>
+  </div>
+</div>`;
+
+/* ============================== ROW/COMPONENT RENDERERS ============= */
+function pillFiling(f){const m={Filed:'approved',Due:'med',Overdue:'high'};return `<span class="pill ${m[f]||'pending'}"><span class="d"></span>${f||'â€”'}</span>`}
+function pillRisk(r){const m={low:['low','Low'],med:['med','Medium'],high:['high','High']};const x=m[r]||['pending',r||'â€”'];return `<span class="pill ${x[0]}"><span class="d"></span>${x[1]}</span>`}
+function scoreColor(s){return s>=80?'var(--green)':s>=60?'var(--amber)':'var(--red)'}
+const ava = c => `<div class="cs-ava" style="width:32px;height:32px;border-radius:8px">${c.init||c.name?.[0]||'â€”'}</div>`;
+
+function clientRow(c){return `<tr class="row-click" onclick="selectClient('${c.gstin}')"><td class="nm">${c.name}</td><td class="gstin">${c.gstin}<button class="copy-btn" onclick="copyText('${c.gstin}',event)">${ico(I.copy)}</button></td><td><span class="tag">${c.scheme||''}</span></td><td>${pillFiling(c.filing)}</td><td>${pillRisk(c.risk)}</td><td class="right"><b class="num">${c.score??'â€“'}</b></td></tr>`}
+function clientRowFull(c){return `<tr class="row-click" onclick="selectClient('${c.gstin}')"><td><div class="flexrow">${ava(c)}<span class="nm">${c.name}</span></div></td><td class="gstin">${c.gstin}<button class="copy-btn" onclick="copyText('${c.gstin}',event)">${ico(I.copy)}</button></td><td>${c.state||''}</td><td><span class="tag">${c.type||''}</span></td><td><span class="tag">${c.scheme||''}</span></td><td>${pillFiling(c.filing)}</td><td>${pillRisk(c.risk)}</td><td class="right"><div class="flexrow" style="justify-content:flex-end;gap:8px"><div class="meter" style="width:60px"><div class="fill" style="width:${c.score||0}%;background:${scoreColor(c.score)}"></div></div><b class="num">${c.score??'â€“'}</b></div></td></tr>`}
+function dlRow(d){return `<div class="dl-row"><div class="dl-date"><div class="d" ${d.overdue?'style="color:var(--red)"':''}>${d.day}</div><div class="m">${d.mon}</div></div><div class="dl-body"><div class="t">${d.title} ${d.overdue?'<span class="pill due"><span class="d"></span>Overdue</span>':''}</div><div class="s">${d.sub||''}</div></div></div>`}
+function actRow(a){const map={approved:['gd',I.check],draft:['b',I.sparkle],recon:['g',I.check],upload:['a',I.upload]};const x=map[a.kind]||['b',I.doc];return `<div class="act-row"><div class="act-ico ${x[0]}">${ico(x[1])}</div><div class="act-body"><div class="t">${a.title}</div><div class="s">${a.sub||''}</div></div><div class="act-time">${a.time||''}</div></div>`}
+function signalRow(s){const lv=s.level==='high'?'r':s.level==='warn'?'a':'g';return `<div class="recon-row ${lv==='g'?'ok':lv==='r'?'flag':'warn'}" style="margin-bottom:10px"><div class="recon-ico ${lv}">${ico(lv==='g'?I.check:I.alert)}</div><div class="recon-body"><div class="rt">${s.title}</div><div class="rs">${s.sub||''}</div></div></div>`}
+function reconRow(r){const lv=r.level==='ok'?'g':r.level==='flag'?'r':'a';return `<div class="recon-row ${r.level==='ok'?'ok':r.level==='flag'?'flag':'warn'}"><div class="recon-ico ${lv}">${ico(lv==='g'?I.check:I.alert)}</div><div class="recon-body"><div class="rt">${r.title}</div><div class="rs">${r.sub||''}</div></div><div class="recon-amt"><div class="ra ${r.amtColor||''}">${r.amount||''}</div><div class="rl">${r.label||''}</div></div></div>`}
+function filingRow(f){const pill={final:'<span class="pill final"><span class="d"></span>Final</span>',reviewed:'<span class="pill reviewed"><span class="d"></span>CA Reviewed</span>',ai:'<span class="pill ai"><span class="d"></span>AI Generated</span>'}[f.status]||'';return `<tr><td class="nm">${f.period}</td><td><span class="tag">${f.return}</span></td><td>${f.output}</td><td>${pill}</td><td class="mono fs12">${f.version||''}</td><td class="right"><button class="btn ghost sm" onclick="go('filing')">Open</button></td></tr>`}
+function noticeRow(n){const pill={final:'final',reviewed:'reviewed',ai:'ai'}[n.status]||'pending';const lbl={final:'Final',reviewed:'CA Reviewed',ai:'AI Generated'}[n.status]||n.status;return `<tr class="row-click" onclick="state.notice={id:'${n.id||''}'};go('notice')"><td class="nm">${n.form}</td><td><span class="tag">${n.section||''}</span></td><td class="num">${n.demand||''}</td><td>${n.due||''}</td><td><span class="pill ${pill}"><span class="d"></span>${lbl}</span></td><td class="right"><button class="btn ghost sm" onclick="event.stopPropagation();state.notice={id:'${n.id||''}'};go('notice')">Open</button></td></tr>`}
+function dDoc(d){return `<div class="upload-item" style="margin-bottom:9px;animation:none"><div class="fi">${ico(I.doc)}</div><div class="fb"><div class="fn">${d.name}</div><div class="fm">${d.type||''} Â· routed to ${d.route||'â€”'} Â· ${d.extracted||''}</div></div></div>`}
+function docTable(docs){
+  if(!docs || !docs.length) return `<div class="card card-pad">${stateMsg({title:'No documents',body:'Upload client records to populate this list.',action:`<button class="btn nav" onclick="go('documents')">Upload</button>`})}</div>`;
+  return `<div class="card"><div class="card-head"><div><h3>Document store</h3><div class="sub">Classified and routed automatically</div></div><button class="btn nav sm" onclick="go('documents')">${ico(I.upload,2)}Upload</button></div><table class="tbl"><thead><tr><th>Document</th><th>Type</th><th>Routed to</th><th>Extracted</th><th class="right">Status</th></tr></thead><tbody>${docs.map(d=>`<tr><td class="nm">${d.name}</td><td><span class="tag">${d.type||''}</span></td><td>${d.route||''}</td><td class="muted fs13">${d.extracted||''}</td><td class="right"><span class="pill approved"><span class="d"></span>Stored</span></td></tr>`).join('')}</tbody></table></div>`;
+}
+function setRow(l,s,on,locked){return `<div class="set-row"><div><div class="sl">${l}${locked?' <span class="tag" style="font-size:10px">enforced</span>':''}</div><div class="ss">${s}</div></div><div class="switch ${on?'on':''}" ${locked?'style="opacity:.6;cursor:not-allowed"':`onclick="this.classList.toggle('on')"`}></div></div>`}
+function connRow(l,v){return `<div class="set-row"><div class="sl">${l}</div><code>${v}</code></div>`}
+function typeCard(k,n,d,on){return `<div class="type-card ${on?'on':''}" data-type="${k}" onclick="pickType(this)"><div class="ti">${ico(typeIco(k))}</div><div class="tn">${n}</div><div class="td">${d}</div></div>`}
+function typeIco(k){return {text_pdf:I.doc,scanned_pdf:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 8h16M9 13h6M9 17h4"/>',image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',csv:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>'}[k]}
+
+/* ============================== CHAT (streaming RAG) =============== */
+let chatCtx='filing', chatHistory=[];
+function chatPanel(ctx){
+  chatCtx=ctx; chatHistory=[];
+  return `<div class="card chat">
+    <div class="chat-head"><div class="ci">${ico(I.sparkle)}</div><div style="flex:1"><h3>Assistant</h3><div class="cs"><span class="d"></span>Grounded in client data + GST knowledge</div></div></div>
+    <div class="chat-body" id="chatBody"><div class="msg ai"><div class="mava">AI</div><div class="mtxt">Ask about this ${ctx==='filing'?'reconciliation':'notice'} or request a change to the draft.</div></div></div>
+    <div class="chat-input">
+      <textarea id="chatInput" rows="1" placeholder="Ask a question or request a changeâ€¦" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="chat-send" onclick="sendChat()" aria-label="Send">${ico(I.arrow)}</button>
+    </div>
+  </div>`;
+}
+function msgHtml(role,txt){return `<div class="msg ${role}"><div class="mava">${role==='ai'?'AI':(state.user?.initials||'CA')}</div><div class="mtxt">${txt}</div></div>`}
+async function sendChat(){
+  const inp=el('chatInput'); const t=inp?inp.value.trim():''; if(!t)return;
+  if(inp) inp.value='';
+  await sendAssistantPrompt(t);
+}
+async function sendAssistantPrompt(t){
+  const gstin = state.activeClient?.gstin;
+  const body=el('chatBody');
+  if(!body){ toast('Assistant chat is not open'); return; }
+  body.insertAdjacentHTML('beforeend', msgHtml('user', escapeHtml(t)));
+  chatHistory.push({role:'user', content:t});
+  body.scrollTop=body.scrollHeight;
+  try {
+    // Filing edits stream straight into the output panel — no chat reply, no typing bubble.
+    if(chatCtx === 'filing' && state.lastFilingOutput?.result?.filing_csv && state.lastFilingOutput?.result?.filing_json){
+      await editCurrentFilingOutput(t);
+      return;
+    }
+    body.insertAdjacentHTML('beforeend', `<div class="msg ai" id="typingMsg"><div class="mava">AI</div><div class="typing"><i></i><i></i><i></i></div></div>`);
+    body.scrollTop=body.scrollHeight;
+    let target=null; let acc='';
+    await API.chat(gstin, chatCtx, chatHistory, (tok)=>{
+      if(!target){ el('typingMsg')?.remove(); body.insertAdjacentHTML('beforeend', msgHtml('ai','<span id="streamTarget"></span>')); target=el('streamTarget'); }
+      acc+=tok; target.textContent=acc; body.scrollTop=body.scrollHeight;
+    });
+    target?.removeAttribute('id');
+    chatHistory.push({role:'assistant', content:acc});
+  } catch(e){
+    el('typingMsg')?.remove();
+    body.insertAdjacentHTML('beforeend', msgHtml('ai', `<span style="color:var(--red)">Assistant request failed - ${escapeHtml(e.message)}</span>`));
+  }
+  body.scrollTop=body.scrollHeight;
+}
+// Streams an AI edit straight into the output panel (#generatedOutputBody) row-by-row.
+// No chat reply is posted — the table itself is the feedback. Downloads read the same
+// state, so they always serialize the latest output once the stream completes.
+async function editCurrentFilingOutput(instruction){
+  const filing = state.lastFilingOutput;
+  const result = filing?.result;
+  if(!filing || !result?.filing_csv || !result?.filing_json)throw new Error('Generate the filing output first');
+  const DELIM = '===FILING_JSON===';
+  const origCsv = result.filing_csv, origJson = result.filing_json;
+  const gstin = filing.gstin || state.activeClient?.gstin;
+  const period = filing.period || currentPeriod();
+  el('typingMsg')?.remove();
+  state.filingStreaming = true;
+  try {
+    let acc='', lastRenderLen=-1;
+    const full = await API.filingEditOutputStream(
+      { gstin, period, instruction, filing_csv: origCsv, filing_json: origJson },
+      (tok)=>{
+        acc += tok;
+        const idx = acc.indexOf(DELIM);
+        const csvPart = idx >= 0 ? acc.slice(0, idx) : acc;
+        // Before the delimiter arrives, render only whole rows so a half-written line never flashes.
+        const renderText = idx >= 0 ? csvPart : csvPart.slice(0, csvPart.lastIndexOf('\n')+1);
+        if(renderText && renderText.length !== lastRenderLen){
+          lastRenderLen = renderText.length;
+          result.filing_csv = renderText.trim();
+          renderGeneratedCsv(result.filing_csv);
+        }
+      }
+    );
+    const idx = full.indexOf(DELIM);
+    if(idx < 0) throw new Error('stream missing JSON delimiter');
+    const csvPart = full.slice(0, idx).trim();
+    const jsonPart = full.slice(idx + DELIM.length).trim();
+    const parsedJson = JSON.parse(jsonPart);
+    result.filing_csv = csvPart;
+    result.filing_json = parsedJson;
+    result.updatedAt = new Date().toISOString();
+    renderGeneratedCsv(result.filing_csv);
+    setDownloadJsonEnabled(true);
+    toast('Output updated');
+  } catch(streamErr){
+    // Fallback to the non-streaming edit endpoint (using the ORIGINAL files as the base)
+    // so a stream/format failure degrades to today's behavior instead of breaking the panel.
+    try {
+      const edited = await API.filingEditOutput({ gstin, period, instruction, filing_csv: origCsv, filing_json: origJson });
+      if(!edited?.filing_csv || !edited?.filing_json)throw new Error('AI did not return updated filing files');
+      result.filing_csv = edited.filing_csv;
+      result.filing_json = edited.filing_json;
+      result.updatedAt = new Date().toISOString();
+      renderGeneratedCsv(result.filing_csv);
+      setDownloadJsonEnabled(true);
+      toast('Output updated');
+    } catch(e){
+      result.filing_csv = origCsv; result.filing_json = origJson;
+      renderGeneratedCsv(result.filing_csv);
+      toast('Update failed — '+e.message);
+    }
+  } finally {
+    state.filingStreaming = false;
+  }
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ============================== ACTIONS ============================ */
+function profTab(t){ document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t)); document.querySelectorAll('.tab-panel').forEach(x=>x.classList.toggle('on',x.id==='tp-'+t)); }
+let selType='text_pdf';
+function pickType(node){ document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('on')); node.classList.add('on'); selType=node.dataset.type; }
+async function handleFiles(files){
+  const gstin=state.activeClient?.gstin; if(!gstin||!files?.length)return;
+  for(const file of files){
+    const id='up'+Math.random().toString(36).slice(2,7);
+    el('uploadList').insertAdjacentHTML('afterbegin', `<div class="upload-item" id="${id}"><div class="fi">${ico(I.doc)}</div><div class="fb"><div class="fn">${escapeHtml(file.name)}</div><div class="fm" id="${id}m">Uploadingâ€¦</div><div class="upbar"><div class="f"></div></div></div></div>`);
+    try {
+      const d = await API.uploadDocument(gstin, file, selType);   // <-- multipart to Flask
+      const m=el(id+'m'); if(m) m.innerHTML=`<span class="pill ai"><span class="d"></span>${d.type||'Classified'}</span> routed to ${d.route||'â€”'} Â· ${d.extracted||'extracted'}`;
+      el(id)?.querySelector('.upbar')?.remove();
+      toast(`${file.name} classified`);
+    } catch(e){
+      const m=el(id+'m'); if(m) m.innerHTML=`<span style="color:var(--red)">Upload failed â€” ${escapeHtml(e.message)}</span>`;
+      el(id)?.querySelector('.upbar')?.remove();
+    }
+  }
+  await refreshStoredDocs(gstin);   // repaint the persisted "Stored documents" list
+}
+async function refreshStoredDocs(gstin){
+  const box=el('storedDocs'); if(!box)return;
+  try{
+    const docs=await API.listDocuments(gstin);
+    box.innerHTML = docs && docs.length ? docs.map(dDoc).join('') : `<div class="muted fs13">No documents stored for this client.</div>`;
+  }catch{}
+}
+async function runRequirementsCheck(){
+  const gstin=state.activeClient?.gstin; if(!gstin)return;
+  const box=el('requirementsCheckResult');
+  state.lastRequirementsCheck = null;
+  state.lastFilingOutput = null;
+  setDownloadJsonEnabled(false);
+  if(box) box.innerHTML = `<div class="muted fs13">Running requirements check...</div>`;
+  try{
+    const r = await API.requirementsCheck(gstin, currentPeriod());
+    state.lastRequirementsCheck = {
+      gstin,
+      period: currentPeriod(),
+      generatedAt: new Date().toISOString(),
+      result: r,
+    };
+    setDownloadJsonEnabled(true);
+    if(box) box.innerHTML = requirementCheckView(r);
+    toast('Requirements check completed');
+  }catch(e){
+    if(box) box.innerHTML = `<div class="muted fs13" style="color:var(--red)">Requirements check failed - ${escapeHtml(e.message)}</div>`;
+    toast('Requirements check failed - '+e.message);
+  }
+}
+function requirementCheckView(r){
+  const missing = r?.missing || [];
+  const flags = r?.flags || [];
+  const actions = r?.actions || [];
+  const actionBtns = actions.length ? `<div class="flexrow gap8 mt16">
+    ${actions.includes('continue') ? `<button class="btn green sm" onclick="continueRequirementsCheck()">${ico(I.check)}Continue</button>` : ''}
+    ${actions.includes('intimate_client') ? `<button class="btn ghost sm" onclick="toast('Client intimation flow pending')">${ico(I.alert)}Intimate client</button>` : ''}
+  </div>` : '';
+  return `
+    <div class="stack gap10">
+      <div class="pill ${r?.status === 'ready' ? 'approved' : 'pending'}"><span class="d"></span>${escapeHtml(r?.status || 'needs_review')}</div>
+      <div class="fs13">${escapeHtml(r?.message || 'Requirement check completed.')}</div>
+      ${missing.length ? `<div><b class="fs13">Missing</b><ul class="mini-list">${missing.map(x=>`<li>${escapeHtml(String(x))}</li>`).join('')}</ul></div>` : ''}
+      ${flags.length ? `<div><b class="fs13">Flags</b><ul class="mini-list">${flags.map(x=>`<li>${escapeHtml(String(x))}</li>`).join('')}</ul></div>` : ''}
+      ${actionBtns}
+    </div>`;
+}
+async function continueRequirementsCheck(){
+  const data = state.lastRequirementsCheck;
+  const gstin = data?.gstin || state.activeClient?.gstin;
+  const period = data?.period || currentPeriod();
+  if(!gstin)return;
+  try{
+    const payload = await API.filingStart(gstin, period);
+    const generatedCsv = buildGeneratedFilingCsv(payload) || (isSummaryCsv(payload.filing_csv) ? '' : (payload.filing_csv || ''));
+    payload.filing_csv = generatedCsv;
+    state.lastFilingOutput = {
+      gstin,
+      period,
+      generatedAt: new Date().toISOString(),
+      result: payload,
+    };
+    setDownloadJsonEnabled(true);
+    renderGeneratedCsv(generatedCsv);
+    appendAssistantMessage(payload.message || 'filing completed');
+    toast('Filing completed');
+  }catch(e){
+    toast('Could not start filing assistant - '+e.message);
+  }
+}
+function appendAssistantMessage(text){
+  const body=el('chatBody');
+  if(!body){ toast(text); return; }
+  body.insertAdjacentHTML('beforeend', msgHtml('ai', escapeHtml(text)));
+  chatHistory.push({role:'assistant', content:text});
+  body.scrollTop=body.scrollHeight;
+}
+function renderGeneratedCsv(csvText){
+  const box=el('generatedOutputBody'); if(!box)return;
+  const rows=parseCsvRows(csvText || '');
+  if(!rows.length){ box.innerHTML = `<div class="card-pad muted fs13">No CSV output returned.</div>`; return; }
+  const head=rows[0] || [];
+  const bodyRows=rows.slice(1);
+  box.innerHTML = `<div class="generated-csv-scroll"><table class="tbl generated-csv-table"><thead><tr>${head.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>${bodyRows.length ? bodyRows.map(row=>`<tr>${head.map((_,i)=>`<td>${escapeHtml(row[i]||'')}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${Math.max(head.length,1)}" class="muted fs13">No filing rows generated.</td></tr>`}</tbody></table></div>`;
+}
+function parseCsvRows(csvText){
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<csvText.length;i++){
+    const c=csvText[i], n=csvText[i+1];
+    if(c==='"' && q && n==='"'){ cell+='"'; i++; continue; }
+    if(c==='"'){ q=!q; continue; }
+    if(c===',' && !q){ row.push(cell); cell=''; continue; }
+    if((c==='\n'||c==='\r') && !q){
+      if(c==='\r' && n==='\n') i++;
+      row.push(cell); rows.push(row); row=[]; cell='';
+      continue;
+    }
+    cell+=c;
+  }
+  if(cell || row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r=>r.some(v=>String(v).trim()!==''));
+}
+function buildGeneratedFilingCsv(payload){
+  const sections = payload?.filing_json?.sections;
+  if(!Array.isArray(sections))return '';
+  const presentSections = sections.filter(section=>section?.document_found && Array.isArray(section.source_files));
+  const preferredSections = presentSections.filter(section=>section.document_key === 'credit_debit_notes_registered');
+  const targetSections = preferredSections.length ? preferredSections : presentSections;
+  const outputs = [];
+  targetSections.forEach(section=>{
+    let columns = filingTemplateColumns(section.json_template);
+    const outputRows = [];
+    section.source_files.forEach(file=>{
+      const parsed = parseCsvRows(file?.file_text || '');
+      if(parsed.length < 2)return;
+      const sourceHead = parsed[0].map(value=>String(value || ''));
+      if(!columns.length){
+        columns = sourceHead.map(name=>({name, keys:[csvFieldKey(name)]})).filter(column=>column.name);
+      }
+      parsed.slice(1).forEach(sourceRow=>{
+        const sourceLookup = {};
+        sourceHead.forEach((name, index)=>{
+          sourceLookup[csvFieldKey(name)] = sourceRow[index] || '';
+        });
+        const mapped = {};
+        columns.forEach(column=>{
+          mapped[column.name] = column.keys.map(key=>sourceLookup[key]).find(value=>value !== undefined) || '';
+        });
+        if(Object.values(mapped).some(value=>String(value).trim()!=='')){
+          outputRows.push(mapped);
+        }
+      });
+    });
+    if(outputRows.length){
+      outputs.push({
+        documentKey: section.document_key || '',
+        columns: columns.map(column=>column.name),
+        rows: outputRows,
+      });
+    }
+  });
+  if(!outputs.length)return '';
+  let headers, rows;
+  if(outputs.length === 1){
+    headers = outputs[0].columns;
+    rows = outputs[0].rows;
+  }else{
+    headers = ['gstr1_section'];
+    outputs.forEach(output=>{ headers = mergeCsvHeaders(headers, output.columns); });
+    rows = outputs.flatMap(output=>output.rows.map(row=>({gstr1_section:output.documentKey, ...row})));
+  }
+  return rowsToCsv(headers, rows);
+}
+function filingTemplateColumns(template){
+  if(!template || typeof template !== 'object')return [];
+  const columns = [];
+  const seen = new Set();
+  (Array.isArray(template.columns) ? template.columns : []).forEach(column=>{
+    if(!column || typeof column !== 'object')return;
+    const name = String(column.column_name || '').trim();
+    if(!name || seen.has(name))return;
+    columns.push({
+      name,
+      keys:[csvFieldKey(name), csvFieldKey(column.canonical_key || '')].filter(Boolean),
+    });
+    seen.add(name);
+  });
+  if(template.row_template && typeof template.row_template === 'object'){
+    Object.keys(template.row_template).forEach(name=>{
+      name = String(name || '').trim();
+      if(!name || seen.has(name))return;
+      columns.push({name, keys:[csvFieldKey(name)]});
+      seen.add(name);
+    });
+  }
+  return columns;
+}
+function isSummaryCsv(csvText){
+  const head = parseCsvRows(csvText || '')[0] || [];
+  const keys = head.map(csvFieldKey);
+  return keys.includes('document_found') || keys.includes('json_template_found') || keys.includes('file_text_characters');
+}
+function rowsToCsv(headers, rows){
+  return [headers, ...rows.map(row=>headers.map(header=>row[header] || ''))]
+    .map(row=>row.map(csvEscape).join(','))
+    .join('\r\n');
+}
+function csvEscape(value){
+  const text = String(value ?? '');
+  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g,'""')}"` : text;
+}
+function mergeCsvHeaders(existing, incoming){
+  const headers = [...existing];
+  incoming.forEach(header=>{
+    if(header && !headers.includes(header))headers.push(header);
+  });
+  return headers;
+}
+function csvFieldKey(value){
+  return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+}
+function setDownloadJsonEnabled(enabled){
+  const btn=el('downloadRequirementsJsonBtn');
+  if(btn) btn.disabled = !enabled;
+}
+function downloadRequirementsJson(){
+  if(state.filingStreaming){ toast('Update in progress…'); return; }
+  const filing = state.lastFilingOutput;
+  const data = filing?.result?.filing_json ? filing : state.lastRequirementsCheck;
+  if(!data){ toast('Run requirements check first'); return; }
+  const jsonData = filing?.result?.filing_json || data;
+  const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filing?.result?.filing_json ? `GSTR1_FILING_${data.gstin}_${data.period}.json` : `GSTR1_REQUIREMENTS_${data.gstin}_${data.period}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('JSON downloaded');
+}
+async function downloadCsv(){
+  if(state.filingStreaming){ toast('Update in progress…'); return; }
+  const gstin=state.activeClient?.gstin; if(!gstin)return;
+  try {
+    if(state.lastFilingOutput?.result?.filing_csv){
+      const blob = new Blob([state.lastFilingOutput.result.filing_csv], {type:'text/csv'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=`GSTR1_FILING_${state.lastFilingOutput.gstin}_${state.lastFilingOutput.period}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('CSV downloaded');
+      return;
+    }
+    const res = await API.filingCsv(gstin, currentPeriod());     // returns blob/Response
+    const blob = res instanceof Blob ? res : (res instanceof Response ? await res.blob() : new Blob([JSON.stringify(res)],{type:'text/csv'}));
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`GSTR3B_${gstin}_${currentPeriod()}.csv`; a.click(); URL.revokeObjectURL(a.href);
+    toast('CSV downloaded');
+  } catch(e){ toast('Download failed â€” '+e.message); }
+}
+async function approveReply(noticeId){
+  const gstin=state.activeClient?.gstin; if(!gstin)return;
+  const html=el('replyDoc')?.cloneNode(true); html?.querySelector('#seal')?.remove();
+  try {
+    const r = await API.approveReply(gstin, noticeId, html?.innerHTML||'', 'Final');   // <-- writes to DB, locks
+    el('seal').classList.add('stamped');
+    const s=el('docStatus'); if(s){ s.className='pill final'; s.innerHTML=`<span class="d"></span>${r.version||'Final'}`; }
+    const b=el('approveBtn'); if(b) b.outerHTML='<span class="pill final" style="padding:8px 14px"><span class="d"></span>Saved to client profile</span>';
+    const steps=document.querySelectorAll('.stepper .step'); if(steps[3]){steps[3].classList.replace('on','done');steps[3].querySelector('.sn').innerHTML=ico(I.check);} if(steps[4])steps[4].classList.add('on');
+    toast('Approved â€” final reply saved');
+  } catch(e){ toast('Approve failed â€” '+e.message); }
+}
+function regenDraft(){ go('notice'); }
+function currentPeriod(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+let segType='all';
+function segPick(btn,t){ segType=t; btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn)); filterClients(); }
+function filterClients(){
+  const q=(el('clientFilter')?.value||'').toLowerCase();
+  const list=state.clients.filter(c=>(segType==='all'||(c.type||'').includes(segType)) && (!q||c.name.toLowerCase().includes(q)||c.gstin.toLowerCase().includes(q)));
+  const tbody=el('clientRows'); if(tbody) tbody.innerHTML = list.length?list.map(clientRowFull).join(''):`<tr><td colspan="8"><div class="state-msg"><h3>No clients match</h3><p>Try a different filter.</p></div></td></tr>`;
+}
+
+/* ============================== COMMAND PALETTE ==================== */
+let cmdkSel=0, cmdkFlat=[];
+function cmdkGroups(){
+  return [
+    {sec:'Views', items:[
+      {t:'Dashboard',sub:'overview',icon:I.doc,fn:()=>go('dashboard')},
+      {t:'Clients',sub:'register',icon:I.users,fn:()=>go('clients')},
+      {t:'Documents',sub:'upload',icon:I.upload,fn:()=>go('documents')},
+      {t:'GST Filing',sub:'module',icon:I.check,fn:()=>go('filing')},
+      {t:'Notice Replies',sub:'module',icon:I.alert,fn:()=>go('notice')},
+      {t:'GST Knowledge Base',sub:'RAG',icon:I.book,fn:()=>go('knowledge')},
+      {t:'Settings',sub:'config',icon:I.gear,fn:()=>go('settings')},
+    ]},
+    {sec:'Clients', items: state.clients.map(c=>({t:c.name,sub:c.gstin,icon:I.users,fn:()=>selectClient(c.gstin)}))},
+    {sec:'Actions', items:[
+      {t:'Toggle dark mode',sub:'theme',icon:I.moon,fn:()=>toggleTheme()},
+      {t:'Sign out',sub:'auth',icon:I.plug,fn:()=>doLogout()},
+    ]},
+  ];
+}
+function openCmdk(){ el('cmdk').classList.add('open'); el('cmdkInput').value=''; cmdkFilter(); setTimeout(()=>el('cmdkInput').focus(),30); }
+function closeCmdk(){ el('cmdk').classList.remove('open'); }
+function cmdkFilter(){
+  const q=el('cmdkInput').value.toLowerCase(); cmdkFlat=[]; let html='';
+  cmdkGroups().forEach(g=>{ const hits=g.items.filter(i=>!q||i.t.toLowerCase().includes(q)||i.sub.toLowerCase().includes(q)); if(!hits.length)return;
+    html+=`<div class="cmdk-sec">${g.sec}</div>`;
+    hits.forEach(i=>{ const idx=cmdkFlat.length; cmdkFlat.push(i); html+=`<button class="cmdk-item ${idx===0?'sel':''}" data-i="${idx}" onclick="cmdkRun(${idx})">${ico(i.icon)}${i.t}<span class="ci-sub">${i.sub}</span></button>`; });
+  });
+  cmdkSel=0; el('cmdkList').innerHTML = html || `<div class="empty" style="padding:28px"><h3 style="font-size:14px">No matches</h3></div>`;
+}
+function cmdkKeys(e){
+  if(e.key==='Escape'){closeCmdk();return}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); cmdkSel=Math.max(0,Math.min(cmdkFlat.length-1,cmdkSel+(e.key==='ArrowDown'?1:-1))); document.querySelectorAll('.cmdk-item').forEach((n,i)=>n.classList.toggle('sel',i===cmdkSel)); document.querySelector('.cmdk-item.sel')?.scrollIntoView({block:'nearest'}); }
+  if(e.key==='Enter'){ e.preventDefault(); cmdkRun(cmdkSel); }
+}
+function cmdkRun(i){ const item=cmdkFlat[i]; if(!item)return; closeCmdk(); item.fn(); }
+document.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCmdk()} if(e.key==='Escape')closeCmdk(); });
+
+/* ============================== POST HOOKS ========================= */
+const POST = { filing:()=>{chatCtx='filing'}, notice:()=>{chatCtx='notice'} };
+
+/* ============================== BOOT =============================== */
+(async function boot(){
+  try { const t=localStorage.getItem('aica_theme'); if(t) setTheme(t); } catch {}
+  if (Auth.isAuthed()){
+    try { const r = await API.me(); state.user = r.user || r; paintUser(); showApp(); go('dashboard'); return; }
+    catch { Auth.clear(); }
+  }
+  showLogin();
+})();
+
+</script>
+</body>
+</html>
+

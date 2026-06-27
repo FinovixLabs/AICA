@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python*)",
+      "Bash(pip*)",
+      "Bash(flask*)",
+      "Bash(psql*)",
+      "Bash(cat*)",
+      "Bash(ls*)",
+      "Bash(pytest*)",
+      "PowerShell(pytest*)"
+    ]
+  }
+}

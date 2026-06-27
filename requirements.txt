@@ -1,0 +1,15 @@
+flask
+flask-cors
+docx2txt
+langchain-classic
+langchain-community
+langchain-core
+langchain-openai
+langchain-postgres
+langchain-text-splitters
+pandas
+psycopg2-binary
+pypdf
+python-dotenv
+rank-bm25
+supabase

@@ -1,0 +1,161 @@
+---
+
+[CHUNK_ID: GST_CORE_001]
+[TOPIC: GST Return Filing Ecosystem]
+[SOURCE: CGST Act, GST Portal]
+
+The GST return filing ecosystem follows a linked compliance flow. GSTR-1 captures outward supplies reported by suppliers. Data from GSTR-1 populates the recipient's GSTR-2B, which is the primary document used for Input Tax Credit (ITC) eligibility verification. Taxpayers then file GSTR-3B to declare tax liability and discharge GST dues. Annual reconciliation is performed through GSTR-9 and GSTR-9C where applicable.
+
+Key Returns:
+
+* GSTR-1: Outward supplies.
+* GSTR-2B: Static ITC statement.
+* GSTR-3B: Tax payment return.
+* GSTR-9: Annual return.
+* GSTR-9C: Reconciliation statement.
+
+Important compliance rule:
+GSTR-1 must be filed before GSTR-3B for the same tax period.
+
+METADATA:
+category=returns
+importance=high
+query_tags=gstr1,gstr3b,gstr2b,annual return
+
+---
+
+[CHUNK_ID: GST_CORE_002]
+[TOPIC: Input Tax Credit (ITC) Eligibility and Restrictions]
+[SOURCE: Section 16 and Section 17(5), CGST Act]
+
+A registered person can claim Input Tax Credit (ITC) only when all statutory conditions are satisfied:
+
+1. Possession of a valid tax invoice or debit note.
+2. Receipt of goods or services.
+3. Tax charged by the supplier has been paid to the Government.
+4. The recipient has filed the applicable GST return.
+
+Time Limit:
+ITC relating to a financial year must be claimed by 30th November of the following financial year or before filing the annual return, whichever is earlier.
+
+Blocked Credits under Section 17(5):
+
+* Motor vehicles (except specified cases).
+* Food and beverages.
+* Personal consumption expenses.
+* Employee travel benefits.
+* Goods lost, stolen, destroyed, written off or distributed as gifts/free samples.
+
+Rule 36(4):
+ITC can only be claimed to the extent reflected in GSTR-2B.
+
+METADATA:
+category=itc
+importance=critical
+query_tags=itc,section16,section17(5),blocked credit,gstr2b
+
+---
+
+[CHUNK_ID: GST_CORE_003]
+[TOPIC: GST Notice Handling Framework]
+[SOURCE: Sections 61, 73 and 74, CGST Act]
+
+Common GST notices include:
+
+ASMT-10:
+Issued during scrutiny of returns when discrepancies are identified.
+
+DRC-01B:
+Generated when tax liability reported in GSTR-1 exceeds liability discharged through GSTR-3B.
+
+Section 73 Proceedings:
+Applicable where tax has not been paid, short paid, or ITC has been wrongly availed without fraud, wilful misstatement, or suppression of facts.
+
+Section 74 Proceedings:
+Applicable where fraud, wilful misstatement, or suppression of facts is alleged.
+
+Recommended Response Workflow:
+
+1. Identify notice type.
+2. Determine section invoked.
+3. Analyse tax, interest, and penalty separately.
+4. Collect documentary evidence.
+5. Prepare factual and legal submissions.
+6. File response within prescribed timelines.
+
+METADATA:
+category=notices
+importance=critical
+query_tags=asmt10,drc01b,section73,section74,notice reply
+
+---
+
+[CHUNK_ID: GST_CORE_004]
+[TOPIC: GST Reconciliation Framework]
+[SOURCE: GST Portal Guidance and Compliance Practice]
+
+GST reconciliation should be performed monthly and annually.
+
+Primary Reconciliations:
+
+1. GSTR-1 vs GSTR-3B.
+2. GSTR-2B vs Purchase Register.
+3. Books of Accounts vs GST Returns.
+
+Common Causes of Mismatch:
+
+* Timing differences.
+* Supplier non-filing.
+* Incorrect tax classification.
+* Credit note/debit note adjustments.
+* Place of supply errors.
+* Reporting mistakes.
+
+Best Practice:
+Claim ITC only after the invoice appears in GSTR-2B and maintain reconciliation working papers for audit, scrutiny, and notice-response purposes.
+
+METADATA:
+category=reconciliation
+importance=high
+query_tags=reconciliation,gstr2b,purchase register,mismatch
+
+---
+
+[CHUNK_ID: GST_CORE_005]
+[TOPIC: GST Compliance Risk Indicators]
+[SOURCE: CBIC Scrutiny Guidance and Professional Practice]
+
+HIGH-RISK INDICATORS:
+
+* GSTR-1 liability significantly exceeds GSTR-3B liability.
+* ITC claimed exceeds GSTR-2B.
+* Repeated return filing defaults.
+* Missing Rule 42 or Rule 43 reversals.
+* Unreported Reverse Charge liabilities.
+* Large unexplained ITC gaps.
+
+MEDIUM-RISK INDICATORS:
+
+* HSN mismatches.
+* E-Way Bill inconsistencies.
+* Frequent amendments and corrections.
+
+LOW-RISK INDICATORS:
+
+* Minor reporting differences.
+* Isolated filing delays.
+
+Compliance Score Parameters:
+
+* Return filing punctuality.
+* GSTR-1 vs GSTR-3B variance.
+* ITC reconciliation accuracy.
+* Outstanding notices.
+* Pending ASMT-10 responses.
+* Annual return compliance.
+* LUT validity (for exporters).
+
+METADATA:
+category=risk_assessment
+importance=high
+query_tags=risk scoring,compliance risk,scrutiny,notice risk
