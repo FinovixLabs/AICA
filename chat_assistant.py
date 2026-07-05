@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
 from typing import Iterator
 
-# Edit these to change the opening message the AI sees when each section loads.
+logger = logging.getLogger(__name__)
+
 CHAT_INIT: dict[str, str] = {
     "filing": "Greet me briefly and explain what you can help me with in the GST filing section.",
     "notice": "Greet me briefly and explain what you can help me with in the GST notice section.",
@@ -30,32 +32,76 @@ _SYSTEM_PROMPTS: dict[str, str] = {
 }
 
 
+def _get_model() -> str:
+    return os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")
+
+
+def _get_base_url() -> str:
+    return os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+
+
+def _retrieve_filing_context(query: str) -> str:
+    """Pull relevant GST KB chunks for the user's query. Returns empty string if RAG unavailable."""
+    try:
+        from hybrid_search import filing_search_engine
+        if filing_search_engine is None:
+            return ""
+        context = filing_search_engine.search_as_context(query)
+        return context
+    except Exception as exc:
+        logger.warning("RAG retrieval failed, continuing without context: %s", exc)
+        return ""
+
+
+def _build_filing_system_prompt(gstin: str | None, rag_context: str) -> str:
+    base = _SYSTEM_PROMPTS["filing"]
+    parts = []
+    if gstin:
+        parts.append(f"Client GSTIN: {gstin}")
+    if rag_context:
+        parts.append(
+            "Use the following GST knowledge base excerpts to ground your answer. "
+            "Cite the relevant section or circular when applicable.\n\n"
+            f"--- GST KNOWLEDGE BASE ---\n{rag_context}\n--- END KNOWLEDGE BASE ---"
+        )
+    parts.append(base)
+    return "\n\n".join(parts)
+
+
 def stream_chat(
     messages: list[dict],
     gstin: str | None = None,
     context: str = "filing",
 ) -> Iterator[str]:
-    """Yield text tokens from OpenAI streaming chat completion."""
+    """Yield text tokens from OpenAI streaming chat completion, with RAG context for filing."""
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         yield "OPENAI_API_KEY is not configured — cannot reach the assistant."
         return
 
-    system = _SYSTEM_PROMPTS.get(context, _SYSTEM_PROMPTS["filing"])
-    if gstin:
-        system = f"Client GSTIN: {gstin}\n\n{system}"
+    # Extract the latest user message for RAG retrieval
+    user_query = ""
+    for msg in reversed(messages):
+        if msg.get("role") == "user":
+            user_query = str(msg.get("content", ""))
+            break
 
-    model = os.getenv("OPENAI_CHAT_MODEL", "gpt-5.4-mini")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+    if context == "filing" and user_query:
+        rag_context = _retrieve_filing_context(user_query)
+        system = _build_filing_system_prompt(gstin, rag_context)
+    else:
+        system = _SYSTEM_PROMPTS.get(context, _SYSTEM_PROMPTS["filing"])
+        if gstin:
+            system = f"Client GSTIN: {gstin}\n\n{system}"
 
     payload = {
-        "model": model,
+        "model": _get_model(),
         "stream": True,
         "messages": [{"role": "system", "content": system}, *messages],
     }
 
     req = urllib.request.Request(
-        f"{base_url}/chat/completions",
+        f"{_get_base_url()}/chat/completions",
         data=json.dumps(payload).encode(),
         headers={
             "Authorization": f"Bearer {api_key}",
@@ -101,8 +147,6 @@ def edit_filing_output(
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is not configured")
 
-    model = os.getenv("OPENAI_CHAT_MODEL", "gpt-5.4-mini")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
     system = (
         "You edit generated GSTR filing outputs for Indian Chartered Accountants. "
         "Apply only the user's requested change to the supplied current CSV and JSON. "
@@ -115,7 +159,7 @@ def edit_filing_output(
     )
 
     payload = {
-        "model": model,
+        "model": _get_model(),
         "temperature": 0,
         "messages": [
             {"role": "system", "content": system},
@@ -136,7 +180,7 @@ def edit_filing_output(
     }
 
     req = urllib.request.Request(
-        f"{base_url}/chat/completions",
+        f"{_get_base_url()}/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {api_key}",
@@ -196,21 +240,14 @@ def stream_edit_filing_output(
     gstin: str | None = None,
     period: str | None = None,
 ) -> Iterator[str]:
-    """Yield tokens of an AI-edited filing as: <CSV> ===FILING_JSON=== <JSON>.
-
-    Mirrors stream_chat()'s OpenAI streaming/error handling. The strict two-part
-    contract lets the client render the CSV live and parse the JSON at the end.
-    """
+    """Yield tokens of an AI-edited filing as: <CSV> ===FILING_JSON=== <JSON>."""
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         yield "OPENAI_API_KEY is not configured — cannot reach the assistant."
         return
 
-    model = os.getenv("OPENAI_CHAT_MODEL", "gpt-5.4-mini")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-
     payload = {
-        "model": model,
+        "model": _get_model(),
         "stream": True,
         "temperature": 0,
         "messages": [
@@ -232,7 +269,7 @@ def stream_edit_filing_output(
     }
 
     req = urllib.request.Request(
-        f"{base_url}/chat/completions",
+        f"{_get_base_url()}/chat/completions",
         data=json.dumps(payload).encode(),
         headers={
             "Authorization": f"Bearer {api_key}",

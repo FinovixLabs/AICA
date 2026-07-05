@@ -286,9 +286,22 @@ def documents(gstin: str):
     if uploaded is None or not uploaded.filename:
         return _json({"error": "file is required"}, 400)
 
-    # The frontend "type" field is a format hint (text_pdf/csv/...), not a
-    # document_type category, so persist the default category for now.
-    doc_type = "other"
+    # Valid doc_type enum values — must match PostgreSQL doc_type enum.
+    _VALID_DOC_TYPES = {
+        'sales_register', 'sales_invoice', 'debit_note', 'credit_note',
+        'export_invoice', 'shipping_bill', 'sez_document', 'deemed_export_document',
+        'advance_receipt_register', 'advance_adjustment_register', 'ecommerce_tcs_statement',
+        'purchase_register', 'rcm_invoice', 'import_services_document',
+        'inward_debit_note', 'inward_credit_note', 'isd_credit_document',
+        'itc_register', 'itc_reversal_working', 'mismatch_rectification_report',
+        'tds_credit_detail', 'tcs_credit_detail', 'interest_working', 'late_fee_working',
+        'payment_challan', 'bank_account_details',
+        'electronic_liability_ledger', 'electronic_cash_ledger', 'electronic_credit_ledger',
+        'supplier_invoice', 'supplier_debit_note', 'supplier_credit_note',
+        'gstr_2a', 'gstr_2b', 'gstr_3b', 'other',
+    }
+    raw_type = (request.form.get('doc_type') or request.form.get('type') or '').strip().lower()
+    doc_type = raw_type if raw_type in _VALID_DOC_TYPES else 'other'
     file_name = uploaded.filename
 
     dest_dir = os.path.join(UPLOAD_ROOT, client_id)
