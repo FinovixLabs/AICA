@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ── Light theme (Option B) ── */
+:root {
+  --canvas: #f5f5f0;
+  --surface: #ffffff;
+  --surface-2: #fafaf7;
+  --border: #e5e5dc;
+  --border-2: #d4d4c8;
+  --forest: #166534;
+  --forest-2: #15803d;
+  --forest-3: #16a34a;
+  --forest-soft: #dcfce7;
+  --forest-dim: rgba(22,101,52,0.08);
+  --amber: #b45309;
+  --amber-2: #d97706;
+  --amber-soft: #fef3c7;
+  --amber-dim: rgba(180,83,9,0.08);
+  --red: #b91c1c;
+  --red-soft: #fee2e2;
+  --red-dim: rgba(185,28,28,0.07);
+  --sage: #6b7c5e;
+  --sage-dim: rgba(107,124,94,0.1);
+  --ink: #1c1c18;
+  --ink-2: #4a4a42;
+  --ink-3: #8a8a7e;
+  --ink-4: #b4b4a8;
+  --sidebar-bg: var(--forest);
+  --sidebar-text: rgba(255,255,255,0.65);
+  --sidebar-text-active: #fff;
+  --sidebar-active-bg: rgba(255,255,255,0.14);
+  --sidebar-hover-bg: rgba(255,255,255,0.08);
+  --sidebar-border: rgba(255,255,255,0.1);
+  --sidebar-label: rgba(255,255,255,0.35);
+  --accent: var(--forest);
+  --accent-2: var(--forest-2);
+  --accent-soft: var(--forest-soft);
+  --accent-dim: var(--forest-dim);
+  --btn-primary-bg: var(--forest);
+  --btn-primary-text: #fff;
+  --btn-primary-hover: var(--forest-2);
+}
+
+/* ── Dark theme (Option C) ── */
+.dark {
+  --canvas: #100e0a;
+  --surface: #171410;
+  --surface-2: #1f1b14;
+  --border: rgba(255,220,120,0.06);
+  --border-2: rgba(255,220,120,0.12);
+  --forest: #f5a623;
+  --forest-2: #e8950f;
+  --forest-3: #fbbf24;
+  --forest-soft: rgba(245,166,35,0.15);
+  --forest-dim: rgba(245,166,35,0.1);
+  --amber: #f5a623;
+  --amber-2: #fbbf24;
+  --amber-soft: rgba(245,166,35,0.15);
+  --amber-dim: rgba(245,166,35,0.1);
+  --red: #f87171;
+  --red-soft: rgba(248,113,113,0.15);
+  --red-dim: rgba(248,113,113,0.1);
+  --sage: #c4a97a;
+  --sage-dim: rgba(196,169,122,0.1);
+  --ink: #f5ead8;
+  --ink-2: #a89878;
+  --ink-3: #6b5c44;
+  --ink-4: #3d3020;
+  --sidebar-bg: #171410;
+  --sidebar-text: #a89878;
+  --sidebar-text-active: #f5ead8;
+  --sidebar-active-bg: rgba(245,166,35,0.1);
+  --sidebar-hover-bg: rgba(255,255,255,0.05);
+  --sidebar-border: rgba(255,220,120,0.08);
+  --sidebar-label: #6b5c44;
+  --accent: #f5a623;
+  --accent-2: #e8950f;
+  --accent-soft: rgba(245,166,35,0.15);
+  --accent-dim: rgba(245,166,35,0.1);
+  --btn-primary-bg: linear-gradient(135deg, #f5a623, #e8950f);
+  --btn-primary-text: #1a1000;
+  --btn-primary-hover: #e8950f;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: auto;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Focus ── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Transitions ── */
+.theme-transition * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+}
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+.animate-fade-in { animation: fadeIn 0.25s ease forwards; }
+.animate-slide-in { animation: slideIn 0.2s ease forwards; }
+
+/* ── Skeleton ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-2) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* ── Mono numbers ── */
+.num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: -0.02em;
+}
+
+/* ── Pills ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.pill-filed { background: var(--forest-soft); color: var(--forest-2); }
+.pill-due { background: var(--amber-soft); color: var(--amber); }
+.pill-overdue { background: var(--red-soft); color: var(--red); }
+.pill-review { background: var(--sage-dim); color: var(--sage); }
+.pill-ai { background: var(--forest-dim); color: var(--forest-2); }
+.pill-final { background: var(--forest-soft); color: var(--forest); }
+
+/* ── Toast ── */
+#toast-root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
