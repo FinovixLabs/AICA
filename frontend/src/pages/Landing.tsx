@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, CheckCircle, Shield, Zap, FileCheck, Users, Lock } from 'lucide-react'
+import { ArrowRight, CheckCircle, Shield, Zap, FileCheck, Users, Lock, Sun, Moon } from 'lucide-react'
+import { useAppStore } from '@/store/appStore'
 
 const FEATURES = [
   { icon: FileCheck, title: 'GSTR-1 Classification', desc: 'Upload your sales register. Every invoice classified to B2B, B2CL, B2CS, EXP using GST Act rules — deterministic, not AI guesswork.' },
@@ -12,11 +13,12 @@ const FEATURES = [
 
 export default function Landing() {
   const navigate = useNavigate()
+  const { theme, toggleTheme } = useAppStore()
 
   return (
-    <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]" >
+    <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]" style={{ overflow: 'auto' }}>
       {/* NAV */}
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-8 h-14 bg-[var(--forest)] border-b border-[rgba(255,255,255,0.1)]">
+      <nav className="sticky top-0 z-50 flex items-center justify-between px-8 h-14 bg-[var(--sidebar-bg)] border-b border-[var(--sidebar-border)]">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
@@ -28,6 +30,13 @@ export default function Landing() {
           </span>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="w-8 h-8 rounded-lg flex items-center justify-center border border-white/20 text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          >
+            {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
+          </button>
           <button
             onClick={() => navigate('/login')}
             className="text-sm font-semibold text-white/70 hover:text-white transition-colors px-3 py-1.5"
@@ -44,8 +53,7 @@ export default function Landing() {
       </nav>
 
       {/* HERO */}
-      <div className="bg-[var(--forest)] pt-20 pb-0 px-8 text-white relative overflow-hidden">
-        {/* Grid background */}
+      <div className="bg-[var(--sidebar-bg)] pt-20 pb-0 px-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
@@ -105,7 +113,7 @@ export default function Landing() {
       {/* FEATURES */}
       <div className="max-w-5xl mx-auto px-8 py-20">
         <div className="text-center mb-12">
-          <div className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--forest-2)] mb-3">Core capabilities</div>
+          <div className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--forest)] mb-3">Core capabilities</div>
           <h2 className="text-3xl font-extrabold tracking-tight mb-3" style={{ letterSpacing: '-0.04em' }}>
             Everything your practice needs
           </h2>
@@ -120,7 +128,7 @@ export default function Landing() {
               className="p-6 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--border-2)] hover:-translate-y-0.5 transition-all duration-200 group"
             >
               <div className="w-9 h-9 rounded-lg bg-[var(--forest-dim)] flex items-center justify-center mb-4 group-hover:bg-[var(--forest-soft)] transition-colors">
-                <f.icon size={18} color="var(--forest-2)" />
+                <f.icon size={18} color="var(--forest)" />
               </div>
               <div className="font-bold text-sm mb-2">{f.title}</div>
               <div className="text-xs text-[var(--ink-3)] leading-relaxed">{f.desc}</div>
@@ -130,7 +138,7 @@ export default function Landing() {
       </div>
 
       {/* HOW IT WORKS */}
-      <div className="bg-[var(--forest)] text-white py-20 px-8">
+      <div className="bg-[var(--sidebar-bg)] text-white py-20 px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-xs font-mono font-bold uppercase tracking-widest text-amber-300 mb-3">How it works</div>
           <h2 className="text-3xl font-extrabold tracking-tight mb-2" style={{ letterSpacing: '-0.04em' }}>GSTR-1 in 4 steps</h2>
@@ -160,7 +168,8 @@ export default function Landing() {
         <p className="text-[var(--ink-3)] mb-6">Join CA firms using AICA to cut filing time from hours to minutes.</p>
         <button
           onClick={() => navigate('/login')}
-          className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-[var(--forest)] text-white font-bold hover:bg-[var(--forest-2)] transition-all"
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-xl text-white font-bold transition-all"
+          style={{ background: 'var(--sidebar-bg)' }}
         >
           Get started <ArrowRight size={15} />
         </button>

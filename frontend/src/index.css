@@ -7,43 +7,43 @@
 
 /* ── Light theme (Option B) ── */
 :root {
-  --canvas: #f5f5f0;
-  --surface: #ffffff;
-  --surface-2: #fafaf7;
-  --border: #e5e5dc;
-  --border-2: #d4d4c8;
-  --forest: #166534;
-  --forest-2: #15803d;
-  --forest-3: #16a34a;
-  --forest-soft: #dcfce7;
-  --forest-dim: rgba(22,101,52,0.08);
+  --canvas: #fffbeb;
+  --surface: #fff8d6;
+  --surface-2: #fffce8;
+  --border: #fde68a;
+  --border-2: #fcd34d;
+  --forest: #ea580c;
+  --forest-2: #c2410c;
+  --forest-3: #fb923c;
+  --forest-soft: rgba(251,146,60,0.15);
+  --forest-dim: rgba(234,88,12,0.1);
   --amber: #b45309;
   --amber-2: #d97706;
   --amber-soft: #fef3c7;
   --amber-dim: rgba(180,83,9,0.08);
-  --red: #b91c1c;
+  --red: #dc2626;
   --red-soft: #fee2e2;
-  --red-dim: rgba(185,28,28,0.07);
-  --sage: #6b7c5e;
-  --sage-dim: rgba(107,124,94,0.1);
-  --ink: #1c1c18;
-  --ink-2: #4a4a42;
-  --ink-3: #8a8a7e;
-  --ink-4: #b4b4a8;
-  --sidebar-bg: var(--forest);
-  --sidebar-text: rgba(255,255,255,0.65);
+  --red-dim: rgba(220,38,38,0.1);
+  --sage: #92400e;
+  --sage-dim: rgba(146,64,14,0.1);
+  --ink: #1c1400;
+  --ink-2: #2d1800;
+  --ink-3: #92640c;
+  --ink-4: #c4861a;
+  --sidebar-bg: #7c3a00;
+  --sidebar-text: rgba(232,184,138,0.8);
   --sidebar-text-active: #fff;
-  --sidebar-active-bg: rgba(255,255,255,0.14);
-  --sidebar-hover-bg: rgba(255,255,255,0.08);
-  --sidebar-border: rgba(255,255,255,0.1);
-  --sidebar-label: rgba(255,255,255,0.35);
-  --accent: var(--forest);
-  --accent-2: var(--forest-2);
-  --accent-soft: var(--forest-soft);
-  --accent-dim: var(--forest-dim);
-  --btn-primary-bg: var(--forest);
+  --sidebar-active-bg: rgba(251,146,60,0.2);
+  --sidebar-hover-bg: rgba(255,255,255,0.07);
+  --sidebar-border: rgba(255,200,100,0.1);
+  --sidebar-label: rgba(192,122,64,0.8);
+  --accent: #ea580c;
+  --accent-2: #c2410c;
+  --accent-soft: rgba(251,146,60,0.15);
+  --accent-dim: rgba(234,88,12,0.1);
+  --btn-primary-bg: linear-gradient(135deg, #fb923c, #ea580c);
   --btn-primary-text: #fff;
-  --btn-primary-hover: var(--forest-2);
+  --btn-primary-hover: #ea580c;
 }
 
 /* ── Dark theme (Option C) ── */

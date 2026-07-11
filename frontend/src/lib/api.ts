@@ -1,11 +1,13 @@
 import axios from 'axios'
 
+
+const BASE = import.meta.env.VITE_API_BASE_URL || ''
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${BASE}/api`,
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach auth token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('aica_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
@@ -60,7 +62,7 @@ export const filingApi = {
   }) => api.post('/filing/edit-output', payload).then((r) => r.data),
 }
 
-// Chat — returns a fetch Response for SSE streaming
+// Chat — SSE streaming
 export const chatApi = {
   stream: async (
     messages: { role: string; content: string }[],
@@ -69,7 +71,7 @@ export const chatApi = {
     onToken: (t: string) => void
   ) => {
     const token = localStorage.getItem('aica_token')
-    const res = await fetch('/api/chat?stream=true', {
+    const res = await fetch(`${BASE}/api/chat?stream=true`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
