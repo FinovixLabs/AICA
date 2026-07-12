@@ -71,7 +71,10 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Clients
   activeClient: null,
-  setActiveClient: (c) => set({ activeClient: c }),
+  setActiveClient: (c) => set((state) => {
+    if (state.activeClient?.gstin === c?.gstin) return { activeClient: c }
+    return { activeClient: c, lastFilingResult: null, chatHistory: [] }
+  }),
   clients: [],
   setClients: (clients) => set({ clients }),
 
