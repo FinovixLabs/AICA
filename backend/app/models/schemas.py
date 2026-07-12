@@ -89,6 +89,13 @@ class FilingEditRequest(BaseModel):
     filing_json: dict[str, Any]
 
 
+class RegisterEditRequest(BaseModel):
+    gstin: str
+    period: str | None = None
+    instruction: str
+    beta_register: list[dict[str, Any]]
+
+
 # ── Chat ──────────────────────────────────────────────────────────────────────
 
 class ChatMessage(BaseModel):
@@ -100,6 +107,7 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = []
     context: str = "filing"
     gstin: str | None = None
+    filing_output: dict[str, Any] | None = None
 
 
 # ── Notices ───────────────────────────────────────────────────────────────────

@@ -69,9 +69,6 @@ export default function Dashboard() {
             {Array.isArray(clients) ? `${clients.length} active client${clients.length === 1 ? '' : 's'}` : 'Loading...'} · {new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
           </p>
         </div>
-        <Button onClick={() => navigate('/clients')} size="sm">
-          <Plus size={12} /> Add client
-        </Button>
       </div>
 
       {/* KPI Cards */}
@@ -168,53 +165,16 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle>Upcoming deadlines</CardTitle>
             </CardHeader>
-            <div>
-              {[
-                { day: '20', mon: 'Jul', title: 'GSTR-1 · 6 clients', sub: 'Regular taxpayers', urgent: true, d: '10d' },
-                { day: '22', mon: 'Jul', title: 'GSTR-3B · 4 clients', sub: 'Monthly filers', urgent: false, d: '12d' },
-                { day: '25', mon: 'Jul', title: 'SCN Reply · Patel & Sons', sub: 'Section 73', urgent: false, d: '15d' },
-              ].map((dl) => (
-                <div key={dl.day + dl.mon} className="flex items-center gap-3 px-5 py-3 border-b border-[var(--border)] last:border-0 hover:bg-[var(--canvas)]">
-                  <div
-                    className="w-9 h-9 rounded-lg flex flex-col items-center justify-center flex-shrink-0 border"
-                    style={{
-                      background: dl.urgent ? 'var(--red-dim)' : 'var(--canvas)',
-                      borderColor: dl.urgent ? 'rgba(185,28,28,0.2)' : 'var(--border-2)',
-                    }}
-                  >
-                    <div className="text-sm font-bold num leading-none" style={{ color: dl.urgent ? 'var(--red)' : 'var(--ink)' }}>{dl.day}</div>
-                    <div className="text-[9px] uppercase tracking-wide font-mono text-[var(--ink-4)]">{dl.mon}</div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold truncate">{dl.title}</div>
-                    <div className="text-[11px] text-[var(--ink-3)]">{dl.sub}</div>
-                  </div>
-                  <StatusPill variant={dl.urgent ? 'overdue' : 'due'}>{dl.d}</StatusPill>
-                </div>
-              ))}
+            <div className="px-5 py-8 text-center text-xs text-[var(--ink-3)]">
+              No upcoming deadlines.
             </div>
           </Card>
 
           {/* Activity */}
           <Card>
             <CardHeader><CardTitle>Recent activity</CardTitle></CardHeader>
-            <div>
-              {[
-                { ico: '✓', color: 'var(--forest-3)', title: 'Sharma Textiles GSTR-1 approved', meta: '2h ago · CA reviewed' },
-                { ico: '↑', color: 'var(--amber-2)', title: 'Mehta Exports sales register uploaded', meta: '5h ago · 847 invoices' },
-                { ico: '!', color: 'var(--red)', title: 'Notice reply drafted · Patel & Sons', meta: 'Yesterday · Pending review' },
-                { ico: '◆', color: 'var(--sage)', title: 'GSTR-1 classification complete', meta: 'Yesterday · Kapoor Pharma' },
-              ].map((a, i) => (
-                <div key={i} className="flex items-start gap-3 px-5 py-3 border-b border-[var(--border)] last:border-0">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ background: `${a.color}18`, color: a.color }}>
-                    {a.ico}
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold">{a.title}</div>
-                    <div className="text-[11px] text-[var(--ink-3)] mt-0.5">{a.meta}</div>
-                  </div>
-                </div>
-              ))}
+            <div className="px-5 py-8 text-center text-xs text-[var(--ink-3)]">
+              No recent activity.
             </div>
           </Card>
         </div>

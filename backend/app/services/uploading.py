@@ -52,9 +52,16 @@ def _extract_pdf(path: Path) -> str:
 
 
 def _extract_excel(path: Path) -> str:
-    frame = pd.read_excel(path, dtype=str)
-    frame = frame.fillna("")
-    return frame.to_csv(index=False)
+    # Read every worksheet — the system processes all sheets, no manual selection.
+    sheets = pd.read_excel(path, sheet_name=None, dtype=str)
+    parts: list[str] = []
+    for sheet_name, frame in sheets.items():
+        frame = frame.fillna("")
+        if frame.empty:
+            continue
+        parts.append(f"# Sheet: {sheet_name}")
+        parts.append(frame.to_csv(index=False))
+    return "\n".join(parts)
 
 
 def _clean_text(raw: str) -> str:

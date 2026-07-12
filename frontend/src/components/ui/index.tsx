@@ -17,8 +17,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
           'disabled:opacity-50 disabled:cursor-not-allowed',
           {
-            // primary
-            'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:opacity-90 shadow-sm hover:-translate-y-px':
+            // primary — use the `background` shorthand (arbitrary property) so the
+            // orange gradient in --btn-primary-bg renders; `bg-[..]` maps to
+            // background-color, which silently drops a gradient value.
+            '[background:var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:opacity-90 shadow-sm hover:-translate-y-px':
               variant === 'primary',
             // ghost
             'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--ink-2)] hover:border-[var(--border-2)] hover:text-[var(--ink)]':

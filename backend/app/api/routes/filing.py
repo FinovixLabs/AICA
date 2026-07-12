@@ -1,20 +1,22 @@
 from __future__ import annotations
-import csv
 import json
-from io import StringIO
+import os
+from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from app.core.db import get_db
 from app.api.deps import get_or_create_default_ca, require_client
 from app.models.schemas import (
     PrerequisitesRequest, RequirementsCheckRequest,
-    FilingStartRequest, FilingEditRequest,
+    FilingStartRequest, FilingEditRequest, RegisterEditRequest,
 )
 from app.filing.prerequisites import check as check_prerequisites, SUPPORTED_FILING_TYPES
-from app.filing.gstr1.classifier import parse_csv_to_rows, classify_rows, build_summary
-from app.filing.gstr1.builder import build_gstr1_json
+from app.filing.gstr1 import pipeline as gstr1_pipeline
 
 router = APIRouter(prefix="/filing", tags=["filing"])
+
+# Where generated workbooks are written (mirrors documents.UPLOAD_ROOT).
+_UPLOAD_ROOT = Path(__file__).resolve().parents[3] / "uploads"
 
 
 @router.post("/prerequisites")
@@ -34,27 +36,26 @@ async def prerequisites(body: PrerequisitesRequest, db=Depends(get_db)):
     return result
 
 
-@router.post("/classify")
-async def classify_sales_register(body: FilingStartRequest, db=Depends(get_db)):
+@router.post("/generate")
+async def generate_gstr1(body: FilingStartRequest, db=Depends(get_db)):
     """
     Core GSTR-1 pipeline:
-    1. Fetch uploaded sales register for the client
-    2. Parse CSV → normalise headers
-    3. Deterministically classify each row into B2B / B2CL / B2CS / EXP / etc.
-    4. Build GSTR-1 JSON
-    5. Return classified tables + summary + JSON + downloadable CSV
+    1. Fetch the client's uploaded sales documents (raw extracted text).
+    2. AI-extract transactions → data-filler → beta sales register.
+    3. Validate (regex + duplicate-invoice) and flag issues for the CA.
+    4. Fill the exact government GSTR-1 workbook.
+    5. Return the beta register, summary, flags, CA notice, and a download route.
     """
     gstin = body.gstin.strip().upper()
-    period = body.period or ""
+    period = _normalise_period(body.period or "")
 
     cur = db.cursor()
     ca_id = get_or_create_default_ca(cur)
     client_id = require_client(cur, ca_id, gstin)
 
-    # Fetch sales register documents
     cur.execute(
         """
-        SELECT file_name, file_text, doc_type::text
+        SELECT file_name, file_text
         FROM documents
         WHERE client_id = %s
           AND doc_type::text IN ('sales_register', 'sales_invoice', 'credit_note', 'debit_note', 'export_invoice')
@@ -62,64 +63,53 @@ async def classify_sales_register(body: FilingStartRequest, db=Depends(get_db)):
         """,
         (client_id,),
     )
-    docs = [{"file_name": r[0], "file_text": r[1], "doc_type": r[2]} for r in cur.fetchall()]
+    raw_texts = [r[1] for r in cur.fetchall() if r[1] and r[1].strip()]
 
-    if not docs:
+    if not raw_texts:
         raise HTTPException(
             status_code=422,
             detail="No sales register or invoice documents found for this client. Upload documents first.",
         )
 
-    # Get seller state code from GSTIN (first 2 digits)
-    seller_state_code = gstin[:2] if len(gstin) >= 2 else None
+    out_name = f"GSTR1_{period or 'draft'}.xlsx"
+    output_path = _UPLOAD_ROOT / client_id / out_name
 
-    # Parse and classify all documents
-    all_rows: list[dict] = []
-    parse_errors: list[str] = []
+    result = gstr1_pipeline.run(raw_texts, client_gstin=gstin, output_path=output_path)
 
-    for doc in docs:
-        file_text = doc.get("file_text") or ""
-        if not file_text.strip():
-            continue
-        headers, rows = parse_csv_to_rows(file_text)
-        if not rows:
-            parse_errors.append(f"{doc['file_name']}: could not parse CSV or no data rows")
-            continue
-        all_rows.extend(rows)
-
-    if not all_rows:
+    if not result["row_count"]:
         raise HTTPException(
             status_code=422,
-            detail=f"No parseable invoice rows found. {'; '.join(parse_errors) if parse_errors else 'Check that uploaded files are valid CSV.'}",
+            detail="Could not extract any transactions from the uploaded documents.",
         )
 
-    # Classify
-    classified_tables = classify_rows(all_rows, seller_state_code=seller_state_code)
-    summary = build_summary(classified_tables)
-
-    # Convert period to MMYYYY for JSON (from YYYY-MM or MMYYYY)
-    json_period = _normalise_period(period)
-
-    # Build GSTR-1 JSON
-    gstr1_json = build_gstr1_json(classified_tables, gstin=gstin, period=json_period)
-
-    # Build classification CSV for CA review
-    classification_csv = _build_classification_csv(classified_tables)
-
     return {
-        "status": "classified",
+        "status": "generated",
         "gstin": gstin,
-        "period": period,
-        "total_rows_processed": len(all_rows),
-        "summary": summary,
-        "tables": {
-            table: rows for table, rows in classified_tables.items()
-            if table != "HSN"  # HSN is in the JSON
-        },
-        "gstr1_json": gstr1_json,
-        "classification_csv": classification_csv,
-        "parse_errors": parse_errors,
+        "period": body.period,
+        "row_count": result["row_count"],
+        "summary": result["summary"],
+        "beta_register": result["beta_register"],
+        "flags": result["flags"],
+        "ca_notice": result["ca_notice"],
+        "download": f"/filing/download/{gstin}/{out_name}",
     }
+
+
+@router.get("/download/{gstin}/{filename}")
+async def download_workbook(gstin: str, filename: str, db=Depends(get_db)):
+    cur = db.cursor()
+    ca_id = get_or_create_default_ca(cur)
+    client_id = require_client(cur, ca_id, gstin.strip().upper())
+
+    safe_name = os.path.basename(filename)
+    path = _UPLOAD_ROOT / client_id / safe_name
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Generated workbook not found.")
+    return FileResponse(
+        path,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=safe_name,
+    )
 
 
 @router.post("/requirements-check")
@@ -157,6 +147,49 @@ async def edit_filing_output(body: FilingEditRequest, db=Depends(get_db)):
         raise HTTPException(status_code=502, detail=str(exc))
 
     return {"status": "updated", **result}
+
+
+@router.post("/edit-register")
+async def edit_register(body: RegisterEditRequest, db=Depends(get_db)):
+    from app.services.chat_assistant import plan_beta_register_edit
+
+    cur = db.cursor()
+    ca_id = get_or_create_default_ca(cur)
+    gstin = body.gstin.strip().upper()
+    client_id = require_client(cur, ca_id, gstin)
+
+    try:
+        plan = plan_beta_register_edit(
+            instruction=body.instruction,
+            beta_register=body.beta_register,
+            gstin=gstin,
+            period=body.period,
+        )
+        edited_register = gstr1_pipeline.apply_edit_operations(
+            body.beta_register,
+            plan["operations"],
+            instruction=body.instruction,
+            client_gstin=gstin,
+        )
+    except (RuntimeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+    period = _normalise_period(body.period or "")
+    out_name = f"GSTR1_{period or 'draft'}.xlsx"
+    rebuilt = gstr1_pipeline.rebuild(
+        edited_register,
+        _UPLOAD_ROOT / client_id / out_name,
+    )
+    return {
+        "status": "updated",
+        "message": plan["message"],
+        "row_count": rebuilt["row_count"],
+        "summary": rebuilt["summary"],
+        "beta_register": rebuilt["beta_register"],
+        "flags": rebuilt["flags"],
+        "ca_notice": rebuilt["ca_notice"],
+        "download": f"/filing/download/{gstin}/{out_name}",
+    }
 
 
 @router.post("/edit-output-stream")
@@ -199,33 +232,3 @@ def _normalise_period(period: str) -> str:
             if len(year) == 4:
                 return f"{month}{year}"
     return period
-
-
-def _build_classification_csv(tables: dict) -> str:
-    """Build a flat CSV showing all classified rows with their GSTR-1 table assignment."""
-    all_rows = []
-    for table_name, rows in tables.items():
-        if table_name == "HSN":
-            continue
-        for row in rows:
-            flat = {"gstr1_table": table_name}
-            for k, v in row.items():
-                if k != "gstr1_table":
-                    flat[k] = v
-            all_rows.append(flat)
-
-    if not all_rows:
-        return ""
-
-    # Collect all keys in order
-    fieldnames: list[str] = ["gstr1_table"]
-    for row in all_rows:
-        for k in row:
-            if k not in fieldnames:
-                fieldnames.append(k)
-
-    output = StringIO()
-    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction="ignore")
-    writer.writeheader()
-    writer.writerows(all_rows)
-    return output.getvalue()

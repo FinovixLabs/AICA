@@ -2,8 +2,7 @@ import { useEffect } from 'react'
 import { NavLink, useNavigate, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard, Users, FileText, ClipboardCheck,
-  Bell, BookOpen, Settings, Sun, Moon, LogOut, Plus,
-  Menu, X, ChevronDown
+  Bell, BookOpen, Settings, LogOut, X
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { authApi } from '@/lib/api'
@@ -26,7 +25,7 @@ const NAV_ITEMS = [
 ]
 
 export default function AppShell() {
-  const { user, theme, toggleTheme, logout, activeClient, sidebarOpen, setSidebarOpen, toasts } = useAppStore()
+  const { user, theme, logout, activeClient, sidebarOpen, setSidebarOpen, toasts } = useAppStore()
   const navigate = useNavigate()
 
   // Apply theme class on mount
@@ -158,37 +157,6 @@ export default function AppShell() {
 
       {/* MAIN */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* TOPBAR */}
-        <header className="h-14 flex-shrink-0 flex items-center justify-between px-6 border-b border-[var(--border)] bg-[var(--surface)]">
-          <div className="flex items-center gap-3">
-            <button
-              className="lg:hidden text-[var(--ink-3)] hover:text-[var(--ink)]"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu size={18} />
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--surface-2)] border border-[var(--border)] transition-all"
-              title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-            >
-              {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
-            </button>
-            {/* Add client */}
-            <button
-              onClick={() => navigate('/clients')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
-              style={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}
-            >
-              <Plus size={12} />
-              Add Client
-            </button>
-          </div>
-        </header>
-
         {/* PAGE CONTENT */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />

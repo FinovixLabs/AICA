@@ -55,38 +55,63 @@ export interface ActivityItem {
   time: string
 }
 
-export interface ClassificationSummary {
-  B2B: TableSummary
-  B2CL: TableSummary
-  B2CS: TableSummary
-  EXP: TableSummary
-  CDNR: TableSummary
-  CDNUR: TableSummary
-  AT: TableSummary
-  ATA: TableSummary
-  EXEMP: TableSummary
-  HSN: { count: number }
-  TOTAL: { total_taxable_value: number; total_tax: number }
-}
-
-export interface TableSummary {
+export interface BucketSummary {
   count: number
   taxable_value?: number
   igst?: number
   cgst?: number
   sgst?: number
   cess?: number
-  total_tax?: number
+}
+
+export interface GstrSummary {
+  B2B: BucketSummary
+  B2CL: BucketSummary
+  B2CS: BucketSummary
+  'Nil-rated': BucketSummary
+  TOTAL: { count: number; taxable_value: number }
+}
+
+export interface BetaRow {
+  date: string | null
+  particulars: string | null
+  voucher_type: string | null
+  voucher_number: string | null
+  gstin: string | null
+  invoice_value: number | null
+  gross_total_sales: number | null
+  cgst: number | null
+  sgst: number | null
+  round_off: number | null
+  igst: number | null
+  discount: number | null
+  segregator: string
+  taxable_value: number | null
+  pos: string | null
+  reverse_charge: string | null
+  applicable_tax_rate: number | null
+  ecommerce_gstin: string | null
+  cess: number | null
+  hsn: string | null
+  [key: string]: unknown
+}
+
+export interface FilingFlag {
+  type: string
+  severity?: 'error' | 'warning'
+  message?: string
+  invoice_number?: string | null
+  [key: string]: unknown
 }
 
 export interface FilingResult {
   status: string
   gstin: string
   period: string
-  total_rows_processed: number
-  summary: ClassificationSummary
-  tables: Record<string, Record<string, unknown>[]>
-  gstr1_json: Record<string, unknown>
-  classification_csv: string
-  parse_errors: string[]
+  row_count: number
+  summary: GstrSummary
+  beta_register: BetaRow[]
+  flags: FilingFlag[]
+  ca_notice: string | null
+  download: string
 }

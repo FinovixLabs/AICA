@@ -11,14 +11,7 @@ const DOC_TYPES = [
   { key: 'sales_register', label: 'Sales Register', desc: 'Outward supply' },
   { key: 'sales_invoice', label: 'Tax Invoices', desc: 'B2B / B2C' },
   { key: 'purchase_register', label: 'Purchase Register', desc: 'Inward supply' },
-  { key: 'credit_note', label: 'Credit Notes', desc: 'Issued' },
-  { key: 'debit_note', label: 'Debit Notes', desc: 'Issued' },
   { key: 'gstr_2a', label: 'GSTR-2A / 2B', desc: 'Portal download' },
-  { key: 'itc_register', label: 'ITC Register', desc: 'Input tax credit' },
-  { key: 'export_invoice', label: 'Export Invoices', desc: 'Zero-rated' },
-  { key: 'rcm_invoice', label: 'RCM Invoices', desc: 'Reverse charge' },
-  { key: 'payment_challan', label: 'Payment Challans', desc: 'Tax paid' },
-  { key: 'other', label: 'Other', desc: 'Miscellaneous' },
 ]
 
 interface UploadItem {

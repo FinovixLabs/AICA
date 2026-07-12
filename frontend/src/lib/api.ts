@@ -54,12 +54,14 @@ export const filingApi = {
     api.post('/filing/prerequisites', { gstin, filing_type }).then((r) => r.data),
   requirementsCheck: (gstin: string, period?: string) =>
     api.post('/filing/requirements-check', { gstin, period }).then((r) => r.data),
-  classify: (gstin: string, period?: string) =>
-    api.post('/filing/classify', { gstin, period }).then((r) => r.data),
-  editOutput: (payload: {
+  generate: (gstin: string, period?: string) =>
+    api.post('/filing/generate', { gstin, period }).then((r) => r.data),
+  downloadWorkbook: (path: string): Promise<Blob> =>
+    api.get(path, { responseType: 'blob' }).then((r) => r.data),
+  editRegister: (payload: {
     gstin: string; period?: string; instruction: string
-    filing_csv: string; filing_json: Record<string, unknown>
-  }) => api.post('/filing/edit-output', payload).then((r) => r.data),
+    beta_register: Record<string, unknown>[]
+  }) => api.post('/filing/edit-register', payload).then((r) => r.data),
 }
 
 // Chat — SSE streaming
@@ -68,6 +70,7 @@ export const chatApi = {
     messages: { role: string; content: string }[],
     context: string,
     gstin: string | null,
+    filingOutput: Record<string, unknown> | null,
     onToken: (t: string) => void
   ) => {
     const token = localStorage.getItem('aica_token')
@@ -77,9 +80,13 @@ export const chatApi = {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({ messages, context, gstin }),
+      body: JSON.stringify({ messages, context, gstin, filing_output: filingOutput }),
     })
-    if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`)
+    if (!res.ok) {
+      const error = await res.json().catch(() => null)
+      throw new Error(error?.detail || `Chat error ${res.status}`)
+    }
+    if (!res.body) throw new Error('Chat response was empty')
     const reader = res.body.getReader()
     const dec = new TextDecoder()
     let buf = ''
