@@ -115,3 +115,158 @@ export interface FilingResult {
   ca_notice: string | null
   download: string
 }
+
+// ── Recon: GSTR-2B reconciliation + IMS management ──────────────────────────
+export type ReconModule = 'gstr2b' | 'ims_outward' | 'ims_inward'
+
+// System field keys the CA maps their columns onto (spec 2.2).
+export type ReconField =
+  | 'supplier_gstin' | 'supplier_name' | 'doc_type' | 'doc_no' | 'doc_date'
+  | 'taxable' | 'tax' | 'invoice' | 'ims_status' | 'return_period' | 'reported_in_form'
+
+export type ReconMap = Partial<Record<ReconField, string | null>>
+
+export interface DocTypeValue {
+  raw: string
+  suggested: string | null
+}
+
+// A document already uploaded through the Documents workspace.
+export interface ReconDocument {
+  id: string
+  doc_type: string
+  file_name: string
+  tax_period: string | null
+  uploaded_at: string | null
+}
+
+export interface ReconSourceSide {
+  doc_type: string
+  label: string
+  documents: ReconDocument[]
+}
+
+export interface ReconSources {
+  module: ReconModule
+  sides: { pr?: ReconSourceSide; cp: ReconSourceSide }
+}
+
+// Result of previewing a chosen document — drives the mapping UI.
+export interface ReconPreview {
+  document_id: string
+  file_name: string
+  headers: string[]
+  sample_rows: (string | number | boolean | null)[][]
+  sample_row_numbers: number[]
+  row_count: number
+  sheet_name: string | null
+  sheet_names: string[]
+  header_row: number
+  header_end_row: number
+  omitted_count: number
+  omitted_rows: { row_no: number; reason: string; label: string | null }[]
+  suggested_map: ReconMap
+  doc_type_values: DocTypeValue[]
+}
+
+export interface ReconResultRow {
+  id: string
+  seq: number
+  status: 'matched' | 'mismatch' | 'missing' | 'extra' | 'duplicate_pr' | 'ambiguous'
+  status_code: string
+  status_label: string
+  actionable: boolean
+  key: string
+  supplier_gstin: string | null
+  supplier_name: string | null
+  doc_type: string | null
+  doc_no: string | null
+  doc_date: string | null
+  pr_invoice: number | null
+  pr_taxable: number | null
+  pr_tax: number | null
+  cp_invoice: number | null
+  cp_taxable: number | null
+  cp_tax: number | null
+  cp_split_count: number
+  is_split: boolean
+  diff_invoice: number | null
+  diff_pct: number | null
+  reason: string | null
+  flags: string[]
+  ims_status: string | null
+  ims_action: 'not_actioned' | 'accept' | 'reject' | 'hold'
+  ims_action_at: string | null
+  ignored: boolean
+  message: string | null
+}
+
+export interface ReconExcludedRow {
+  side: 'pr' | 'cp'
+  reason: string
+  supplier_gstin: string | null
+  supplier_name: string | null
+  doc_type: string | null
+  doc_no: string | null
+  doc_date: string | null
+  invoice: number | null
+  taxable: number | null
+  tax: number | null
+  ims_status: string | null
+}
+
+export interface ReconTotals {
+  matched: number
+  mismatch: number
+  missing: number
+  extra: number
+  duplicate_pr: number
+  ambiguous: number
+  excluded: number
+  unresolved: number
+  total: number
+}
+
+export interface ReconRunResult {
+  run_id: string
+  module: ReconModule
+  period: string | null
+  results: ReconResultRow[]
+  excluded: ReconExcludedRow[]
+  totals: ReconTotals
+  engine_version: string
+}
+
+// IMS Outward: the client's outward invoices matched against the Sales Register
+// (on Recipient GSTIN + invoice value) and grouped by the recipient's IMS action.
+export type ImsOutwardBucket = 'accepted' | 'rejected' | 'pending'
+export type SrMatch = 'in_sr' | 'not_in_sr'
+
+export interface ImsOutwardRecord {
+  row_no: number
+  supplier_gstin: string | null   // the recipient GSTIN
+  supplier_name: string | null    // trade / legal name
+  doc_no: string | null
+  doc_date: string | null
+  taxable: number | null
+  tax: number | null
+  invoice: number | null
+  return_period: string | null
+  reported_in_form: string | null
+  ims_status: string | null
+  status: ImsOutwardBucket
+  sr_match: SrMatch
+  takeable: boolean
+}
+
+export interface ImsOutwardResult {
+  module: 'ims_outward'
+  sr_file: string
+  ims_file: string
+  records: ImsOutwardRecord[]
+  buckets: Record<ImsOutwardBucket, number>
+  totals: { total: number; in_sr: number; not_in_sr: number } & Record<string, number>
+  skipped_b2c: number
+  engine_version: string
+  actions_executable: boolean
+}

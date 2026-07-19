@@ -1,9 +1,6 @@
 from __future__ import annotations
-import re
 from fastapi import HTTPException
 from app.core.db import get_db  # re-export for convenience
-
-GSTIN_RE = re.compile(r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z]Z[0-9A-Z]$")
 
 _default_ca_id: str | None = None
 

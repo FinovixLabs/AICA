@@ -7,6 +7,9 @@ import Dashboard from '@/pages/dashboard/Dashboard'
 import ClientList from '@/pages/clients/ClientList'
 import Documents from '@/pages/documents/Documents'
 import Filing from '@/pages/filing/Filing'
+import Gstr2b from '@/pages/recon/Gstr2b'
+import ImsInward from '@/pages/recon/ImsInward'
+import ImsOutward from '@/pages/recon/ImsOutward'
 import Notice from '@/pages/notice/Notice'
 import Knowledge from '@/pages/knowledge/Knowledge'
 import Settings from '@/pages/settings/Settings'
@@ -37,6 +40,9 @@ export default function App() {
         <Route path="clients" element={<ClientList />} />
         <Route path="documents" element={<Documents />} />
         <Route path="filing" element={<Filing />} />
+        <Route path="recon/gstr2b" element={<Gstr2b />} />
+        <Route path="recon/ims-inward" element={<ImsInward />} />
+        <Route path="recon/ims-outward" element={<ImsOutward />} />
         <Route path="notices" element={<Notice />} />
         <Route path="knowledge" element={<Knowledge />} />
         <Route path="settings" element={<Settings />} />

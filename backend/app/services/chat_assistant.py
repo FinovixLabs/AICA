@@ -2,10 +2,9 @@ from __future__ import annotations
 import json
 import logging
 import re
-import urllib.error
-import urllib.request
 from typing import Iterator
 from app.core.config import get_settings
+from app.core.openai_client import post_chat, stream_chat as stream_completion
 from app.filing.gstr1.constants import BETA_COLUMNS
 
 logger = logging.getLogger(__name__)
@@ -44,10 +43,6 @@ _EDIT_STREAM_SYSTEM = (
 
 def _get_model() -> str:
     return get_settings().OPENAI_CHAT_MODEL
-
-
-def _get_base_url() -> str:
-    return get_settings().OPENAI_BASE_URL.rstrip("/")
 
 
 def _get_api_key() -> str:
@@ -209,39 +204,9 @@ def stream_chat(
 
     payload = {
         "model": _get_model(),
-        "stream": True,
         "messages": [{"role": "system", "content": system}, *messages],
     }
-
-    req = urllib.request.Request(
-        f"{_get_base_url()}/chat/completions",
-        data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req, timeout=60) as res:
-            for raw in res:
-                line = raw.decode("utf-8").strip()
-                if not line.startswith("data:"):
-                    continue
-                data = line[5:].strip()
-                if data == "[DONE]":
-                    return
-                try:
-                    chunk = json.loads(data)
-                    token = chunk["choices"][0]["delta"].get("content") or ""
-                    if token:
-                        yield token
-                except (KeyError, IndexError, json.JSONDecodeError):
-                    continue
-    except urllib.error.HTTPError as exc:
-        yield f"\n[Error {exc.code}] Could not reach the AI service."
-    except urllib.error.URLError as exc:
-        yield f"\n[Error] Network error: {exc.reason}"
-    except TimeoutError:
-        yield "\n[Error] Request timed out."
+    yield from stream_completion(payload, timeout=60)
 
 
 def stream_edit_filing_output(
@@ -259,7 +224,6 @@ def stream_edit_filing_output(
 
     payload = {
         "model": _get_model(),
-        "stream": True,
         "temperature": 0,
         "messages": [
             {"role": "system", "content": _EDIT_STREAM_SYSTEM},
@@ -278,36 +242,7 @@ def stream_edit_filing_output(
             },
         ],
     }
-
-    req = urllib.request.Request(
-        f"{_get_base_url()}/chat/completions",
-        data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req, timeout=90) as res:
-            for raw in res:
-                line = raw.decode("utf-8").strip()
-                if not line.startswith("data:"):
-                    continue
-                data = line[5:].strip()
-                if data == "[DONE]":
-                    return
-                try:
-                    chunk = json.loads(data)
-                    token = chunk["choices"][0]["delta"].get("content") or ""
-                    if token:
-                        yield token
-                except (KeyError, IndexError, json.JSONDecodeError):
-                    continue
-    except urllib.error.HTTPError as exc:
-        yield f"\n[Error {exc.code}] Could not reach the AI service."
-    except urllib.error.URLError as exc:
-        yield f"\n[Error] Network error: {exc.reason}"
-    except TimeoutError:
-        yield "\n[Error] Request timed out."
+    yield from stream_completion(payload, timeout=90)
 
 
 def edit_filing_output(
@@ -349,22 +284,7 @@ def edit_filing_output(
         ],
     }
 
-    req = urllib.request.Request(
-        f"{_get_base_url()}/chat/completions",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req, timeout=90) as res:
-            body = res.read().decode("utf-8")
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"AI service error ({exc.code})") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"Network error: {exc.reason}") from exc
-    except TimeoutError as exc:
-        raise RuntimeError("Request timed out") from exc
+    body = post_chat(payload, timeout=90)
 
     try:
         content = json.loads(body)["choices"][0]["message"]["content"]
@@ -438,21 +358,7 @@ def plan_beta_register_edit(
         ],
     }
 
-    req = urllib.request.Request(
-        f"{_get_base_url()}/chat/completions",
-        data=json.dumps(payload, separators=(",", ":")).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as res:
-            body = res.read().decode("utf-8")
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"AI service error ({exc.code})") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"Network error: {exc.reason}") from exc
-    except TimeoutError as exc:
-        raise RuntimeError("Request timed out") from exc
+    body = post_chat(payload, timeout=60)
 
     try:
         content = json.loads(body)["choices"][0]["message"]["content"]

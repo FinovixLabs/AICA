@@ -33,20 +33,6 @@ export function scoreColor(score: number): string {
   return 'var(--red)'
 }
 
-export function downloadBlob(content: string, filename: string, type = 'text/csv') {
-  const blob = new Blob([content], { type })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-export function downloadJson(data: unknown, filename: string) {
-  downloadBlob(JSON.stringify(data, null, 2), filename, 'application/json')
-}
-
 export function saveBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -54,4 +40,12 @@ export function saveBlob(blob: Blob, filename: string) {
   a.download = filename
   a.click()
   URL.revokeObjectURL(url)
+}
+
+export function downloadBlob(content: string, filename: string, type = 'text/csv') {
+  saveBlob(new Blob([content], { type }), filename)
+}
+
+export function downloadJson(data: unknown, filename: string) {
+  downloadBlob(JSON.stringify(data, null, 2), filename, 'application/json')
 }

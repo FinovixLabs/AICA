@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { NavLink, useNavigate, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard, Users, FileText, ClipboardCheck,
-  Bell, BookOpen, Settings, LogOut, X
+  Bell, BookOpen, Settings, LogOut, X,
+  GitCompareArrows, Inbox, Send
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { authApi } from '@/lib/api'
@@ -17,6 +18,11 @@ const NAV_ITEMS = [
   { label: 'Modules', items: [
     { to: '/filing', icon: ClipboardCheck, label: 'GST Filing' },
     { to: '/notices', icon: Bell, label: 'Notices', badge: 0 },
+  ]},
+  { label: 'Reconciliation', items: [
+    { to: '/recon/gstr2b', icon: GitCompareArrows, label: 'GSTR-2B' },
+    { to: '/recon/ims-inward', icon: Inbox, label: 'IMS Inward' },
+    { to: '/recon/ims-outward', icon: Send, label: 'IMS Outward' },
   ]},
   { label: 'Reference', items: [
     { to: '/knowledge', icon: BookOpen, label: 'Knowledge' },

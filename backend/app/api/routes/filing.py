@@ -1,10 +1,11 @@
 from __future__ import annotations
 import json
 import os
-from pathlib import Path
+import re
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from app.core.db import get_db
+from app.core.config import get_settings
 from app.api.deps import get_or_create_default_ca, require_client
 from app.models.schemas import (
     PrerequisitesRequest, RequirementsCheckRequest,
@@ -16,7 +17,7 @@ from app.filing.gstr1 import pipeline as gstr1_pipeline
 router = APIRouter(prefix="/filing", tags=["filing"])
 
 # Where generated workbooks are written (mirrors documents.UPLOAD_ROOT).
-_UPLOAD_ROOT = Path(__file__).resolve().parents[3] / "uploads"
+_UPLOAD_ROOT = get_settings().upload_root_path
 
 
 @router.post("/prerequisites")
@@ -225,10 +226,11 @@ def _normalise_period(period: str) -> str:
     """Convert YYYY-MM → MMYYYY for GST portal, or pass through if already MMYYYY."""
     if not period:
         return ""
-    if "-" in period:
-        parts = period.split("-")
-        if len(parts) == 2:
-            year, month = parts[0], parts[1]
-            if len(year) == 4:
-                return f"{month}{year}"
-    return period
+    value = period.strip()
+    match = re.fullmatch(r"(\d{4})-(0[1-9]|1[0-2])", value)
+    if match:
+        year, month = match.groups()
+        return f"{month}{year}"
+    if re.fullmatch(r"(0[1-9]|1[0-2])\d{4}", value):
+        return value
+    raise HTTPException(status_code=422, detail="Period must be YYYY-MM or MMYYYY")

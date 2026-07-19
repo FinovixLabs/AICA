@@ -49,7 +49,7 @@ uvicorn app.main:app --reload --port 8000
 ### Frontend
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev                # runs on :5173, proxies /api to :8000
 ```
 
@@ -58,13 +58,14 @@ Open `http://localhost:5173`
 ## Production build
 
 ```bash
-# 1. Build frontend
-cd frontend && npm run build
-
-# 2. FastAPI serves the built frontend + API from one process
-cd ../backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Reproducible monolith image: frontend build + FastAPI runtime
+docker build -t aica .
+docker run --env-file backend/.env.production \
+  -p 8000:8000 -v aica-uploads:/data/uploads aica
 ```
+
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the pre-deploy gate, migrations,
+persistent uploads, authentication setup, and split-host configuration.
 
 ## Deploy to Render (recommended)
 
@@ -72,11 +73,11 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - Frontend → Vercel (`frontend/` folder, `npm run build`, publish `dist/`)
 - Backend → Render Web Service (`backend/` folder, `uvicorn app.main:app --host 0.0.0.0 --port $PORT`)
 - Set `CORS_ORIGINS=https://your-vercel-app.vercel.app` in Render env vars
-- Set `VITE_API_URL=https://your-backend.render.com` in Vercel env vars (if using split)
+- Set `VITE_API_BASE_URL=https://your-backend.render.com` in Vercel env vars (if using split)
 
 **Option 2: Monolith on Render**
-- Build command: `cd frontend && npm install && npm run build`
-- Start command: `cd backend && pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Build command: `pip install -r backend/requirements.txt && npm ci --prefix frontend && npm run build --prefix frontend`
+- Start command: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
 ## Environment variables (backend/.env)
 
@@ -88,6 +89,8 @@ SUPABASE_JWT_SECRET=...
 OPENAI_API_KEY=sk-...
 OPENAI_CHAT_MODEL=gpt-4o-mini
 CORS_ORIGINS=http://localhost:5173,https://yourdomain.com
+UPLOAD_ROOT=uploads
+MAX_UPLOAD_MB=25
 ```
 
 ## GSTR-1 Pipeline

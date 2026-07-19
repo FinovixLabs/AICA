@@ -8,10 +8,12 @@ import { Card, CardHeader, CardTitle, CardSub, Button, EmptyState, Skeleton } fr
 import type { Document } from '@/types'
 
 const DOC_TYPES = [
+  { key: 'purchase_register', label: 'Purchase Register', desc: 'Inward supply' },
+  { key: 'gstr_2b', label: 'GSTR-2B', desc: 'Auto-draft ITC (for reconciliation)' },
+  { key: 'ims_inward', label: 'IMS Inward', desc: 'Inward invoices (for reconciliation)' },
+  { key: 'ims_outward', label: 'IMS Outward', desc: 'Outward invoices (for reconciliation)' },
   { key: 'sales_register', label: 'Sales Register', desc: 'Outward supply' },
   { key: 'sales_invoice', label: 'Tax Invoices', desc: 'B2B / B2C' },
-  { key: 'purchase_register', label: 'Purchase Register', desc: 'Inward supply' },
-  { key: 'gstr_2a', label: 'GSTR-2A / 2B', desc: 'Portal download' },
 ]
 
 interface UploadItem {
