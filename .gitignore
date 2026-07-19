@@ -11,6 +11,11 @@ build/
 venv/
 .venv/
 env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Env files
 .env
@@ -24,6 +29,7 @@ frontend/dist/
 
 # Uploads (runtime)
 backend/uploads/
+.dist/
 
 # Logs
 logs/
@@ -37,6 +43,12 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Local agent/tool state
+.agents/
+.codex/
+.claude/
+giu.txt
 
 # Agent handoff files
 TASK.md

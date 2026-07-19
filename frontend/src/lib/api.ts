@@ -1,7 +1,7 @@
 import axios from 'axios'
+import type { FilingResult } from '@/types'
 
-
-const BASE = import.meta.env.VITE_API_BASE_URL || ''
+const BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
 
 const api = axios.create({
   baseURL: `${BASE}/api`,
@@ -70,7 +70,7 @@ export const chatApi = {
     messages: { role: string; content: string }[],
     context: string,
     gstin: string | null,
-    filingOutput: Record<string, unknown> | null,
+    filingOutput: FilingResult | null,
     onToken: (t: string) => void
   ) => {
     const token = localStorage.getItem('aica_token')
@@ -106,6 +106,41 @@ export const chatApi = {
       }
     }
   },
+}
+
+// Recon — GSTR-2B reconciliation + IMS management
+export type ReconModule = 'gstr2b' | 'ims_outward' | 'ims_inward'
+
+export const reconApi = {
+  // Source documents come from the Documents workspace; reconciliation references them.
+  sources: (module: ReconModule, gstin: string) =>
+    api.get(`/recon/${module}/sources`, { params: { gstin } }).then((r) => r.data),
+  preview: (module: ReconModule, gstin: string, document_id: string, sheet?: string) =>
+    api.post('/recon/preview', { module, gstin, document_id, sheet }).then((r) => r.data),
+  docTypes: (module: ReconModule, gstin: string, document_id: string, doc_type_header: string, sheet?: string) =>
+    api.post(`/recon/${module}/doc-types`, { gstin, document_id, doc_type_header, sheet }).then((r) => r.data),
+  run: (module: 'gstr2b' | 'ims_inward', payload: Record<string, unknown>) =>
+    api.post(`/recon/${module}/run`, payload).then((r) => r.data),
+  outwardReconcile: (payload: Record<string, unknown>) =>
+    api.post('/recon/ims_outward/reconcile', payload).then((r) => r.data),
+  draftMessage: (gstin: string, record: Record<string, unknown>) =>
+    api.post('/recon/draft-message', { gstin, record }).then((r) => r.data),
+  listRuns: (module: ReconModule, gstin: string) =>
+    api.get(`/recon/${module}/runs`, { params: { gstin } }).then((r) => r.data),
+  getRun: (runId: string, gstin: string) =>
+    api.get(`/recon/runs/${runId}`, { params: { gstin } }).then((r) => r.data),
+  ignore: (resultId: string, gstin: string, ignored: boolean) =>
+    api.post(`/recon/results/${resultId}/ignore`, { ignored }, { params: { gstin } }).then((r) => r.data),
+  message: (resultId: string, gstin: string) =>
+    api.post(`/recon/results/${resultId}/message`, {}, { params: { gstin } }).then((r) => r.data),
+  inwardAction: (resultId: string, gstin: string, action: 'accept' | 'reject' | 'hold') =>
+    api.post(`/recon/results/${resultId}/ims-action`, { action }, { params: { gstin } }).then((r) => r.data),
+  resetInwardActions: (runId: string, gstin: string) =>
+    api.post(`/recon/runs/${runId}/ims-actions/reset`, {}, { params: { gstin } }).then((r) => r.data),
+  acceptMatchedInward: (runId: string, gstin: string) =>
+    api.post(`/recon/runs/${runId}/ims-actions/accept-matched`, {}, { params: { gstin } }).then((r) => r.data),
+  downloadExcel: (runId: string, gstin: string): Promise<Blob> =>
+    api.get(`/recon/runs/${runId}/excel`, { params: { gstin }, responseType: 'blob' }).then((r) => r.data),
 }
 
 // Notices

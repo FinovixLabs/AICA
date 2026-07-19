@@ -1,0 +1,9 @@
+# Dev/test dependencies for the recon modules.
+#
+# Kept separate so requirements.txt — which every existing module and the
+# deployment install from — needs no edit.
+#
+#   pip install -r requirements-dev.txt
+#   python -m pytest tests/recon
+-r requirements.txt
+pytest
